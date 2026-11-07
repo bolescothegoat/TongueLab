@@ -1,0 +1,13 @@
+build/
+build15/
+dist/
+_libs/
+deps15/
+*.log
+*.dll
+*.zip
+*.exe
+*.obj
+__pycache__/
+# not redistributable here; see BUILDING.md
+src/SKSEMenuFramework.h

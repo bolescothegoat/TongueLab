@@ -1,0 +1,906 @@
+{
+ "format": 2,
+ "what": "TongueLab slide-bone patch for Halo's tongues (linga1..10.nif): re-binds the rigid part from the head to the 'tong1 1' anchor",
+ "files": {
+  "linga1.nif": {
+   "variants": [
+    {
+     "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "size": 137737,
+     "source_sha256": "48631a9db63fdf327a2d0cd586bfa9f662d7d6cf1f3af337932083f19c08cadc",
+     "patched_sha256": "901d3afbf051556684bba56112a23465ab71109ca58b80275a930b355907efdc",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 6301,
+       "original": "2c0445bd7bc3014100f63fc0",
+       "patched": "028e2dbfa9f9223e1e608abf"
+      }
+     ]
+    },
+    {
+     "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "size": 133739,
+     "source_sha256": "e8d6eafaad03250ece3e8a6b1f5f97c92ecf1cf0510618da5e8ac91ceec37713",
+     "patched_sha256": "cbfc24d52cc8f1cd70f3a7eb7aad3912a0be2d9f7b43425bce1433d2ea1e350f",
+     "patches": [
+      {
+       "offset": 20574,
+       "original": "62",
+       "patched": "63"
+      },
+      {
+       "offset": 20651,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 20687,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 20703,
+       "original": "60fa11bd8233e5408083edbf",
+       "patched": "2df4323f3a46a43d2befaabe"
+      }
+     ]
+    },
+    {
+     "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "size": 137782,
+     "source_sha256": "0adf32e812c438cbf16d00591f529f2873e319993c76194c0ba37806ca0c48a1",
+     "patched_sha256": "71d05d6d8fd2a437c80f518e179e0421b25df37ab4c61d327651b891bc807346",
+     "patches": [
+      {
+       "offset": 24609,
+       "original": "76",
+       "patched": "77"
+      },
+      {
+       "offset": 24694,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 24730,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 24746,
+       "original": "2c0445bd7bc3014100f63fc0",
+       "patched": "028e2dbfa9f9223e1e608abf"
+      }
+     ]
+    }
+   ]
+  },
+  "linga2.nif": {
+   "variants": [
+    {
+     "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "size": 137737,
+     "source_sha256": "121d66b6c3db25060ce52776b067292aeca552e93344d16da3a101949d197dc7",
+     "patched_sha256": "7828faffa5ec93e5ce3ac7bc153a0b11c3b867da211805b9c93a552f90977510",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "2318393cf6ca7abf26c1c93ecfad863f55a7babc18cab1bd6759b63d0480c93eaad279"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "ed1317c295371c41192cdd"
+      },
+      {
+       "offset": 6301,
+       "original": "ee66aebddc080141a0b436c0",
+       "patched": "f1b444bf021bcc3d7a1357bf"
+      }
+     ]
+    },
+    {
+     "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "size": 133741,
+     "source_sha256": "9b03e092a97b49dda8238efc8e9a0e64a7e0f958183d44dc26cb04d2ecbded3c",
+     "patched_sha256": "0e0a7da8c32dd0f125e7762a7f791ffdccfc4245b32f1c0fac1d277db5b4ecdf",
+     "patches": [
+      {
+       "offset": 20576,
+       "original": "62",
+       "patched": "63"
+      },
+      {
+       "offset": 20653,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 20689,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 20705,
+       "original": "d6368fbd4c95dd40400edcbf",
+       "patched": "4f297c3fd79f0c3d5df797be"
+      }
+     ]
+    },
+    {
+     "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "size": 137782,
+     "source_sha256": "a219b6e9e329bf7a1630cf0fda50d1551b41e8370b0a8bbd20b1342741a2d576",
+     "patched_sha256": "3f8846d91cd4ba492e59010a55e51e38cf61cbfe49da5d1bb3f6a4759eb14907",
+     "patches": [
+      {
+       "offset": 24609,
+       "original": "76",
+       "patched": "77"
+      },
+      {
+       "offset": 24694,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "2318393cf6ca7abf26c1c93ecfad863f55a7babc18cab1bd6759b63d0480c93eaad279"
+      },
+      {
+       "offset": 24730,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "ed1317c295371c41192cdd"
+      },
+      {
+       "offset": 24746,
+       "original": "ee66aebddc080141a0b436c0",
+       "patched": "f1b444bf021bcc3d7a1357bf"
+      }
+     ]
+    }
+   ]
+  },
+  "linga3.nif": {
+   "variants": [
+    {
+     "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "size": 137737,
+     "source_sha256": "7a42b034e287dccd8341b9bc8a48a6ca438bfe90071d41da88cc374e45dccf44",
+     "patched_sha256": "c7151c5449d448a00952cc59ae46dda367c79579b542eba225bc54f4aad60095",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "bbcd0c3e095d78bf3993c93eb1ff853f8a6af73d321d8bbd16428e3c285ccc3ef33d7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "8f2716c2fd04e040c0c6dd"
+      },
+      {
+       "offset": 6301,
+       "original": "25107dbe9a970941c0c73ec0",
+       "patched": "396b8dbfa2b17a3e326c57bf"
+      }
+     ]
+    },
+    {
+     "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "size": 133741,
+     "source_sha256": "cf91eef06533534e28f593320f5975f8a68e441c6b673b3c768ec91099990b83",
+     "patched_sha256": "62023b82e169532fc8e8217dd321cb7625dd8bed165bbdd11c6cfcf6a5e74df9",
+     "patches": [
+      {
+       "offset": 20576,
+       "original": "62",
+       "patched": "63"
+      },
+      {
+       "offset": 20653,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 20689,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 20705,
+       "original": "425b6fbec4c3f4408016c8bf",
+       "patched": "e3d6a93e447422befb64003e"
+      }
+     ]
+    },
+    {
+     "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "size": 137782,
+     "source_sha256": "6cb97f57f6fd04a45fb42b46222259fc434da46284ef17c95bfe7d014c2e7334",
+     "patched_sha256": "04b805a7025d85b868419ce90d168cb0f9cea3960b65d99da2fd6861a84dbf8b",
+     "patches": [
+      {
+       "offset": 24609,
+       "original": "76",
+       "patched": "77"
+      },
+      {
+       "offset": 24694,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "bbcd0c3e095d78bf3993c93eb1ff853f8a6af73d321d8bbd16428e3c285ccc3ef33d7a"
+      },
+      {
+       "offset": 24730,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "8f2716c2fd04e040c0c6dd"
+      },
+      {
+       "offset": 24746,
+       "original": "25107dbe9a970941c0c73ec0",
+       "patched": "396b8dbfa2b17a3e326c57bf"
+      }
+     ]
+    }
+   ]
+  },
+  "linga4.nif": {
+   "variants": [
+    {
+     "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "size": 137737,
+     "source_sha256": "d4b63caed3d1cb6ddd6805363a7e959019aeada2907674d3ad09322d23630c9a",
+     "patched_sha256": "ed65cfea4e2e5a8231d079ac19c872a655582467bcdd7a58df86db38115f9126",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "104b893ca4857abf3effca3ecf14873f9fd1363b5e841abddae60a3d612ccb3e575f7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "55b116c297ce8640ccbadd"
+      },
+      {
+       "offset": 6301,
+       "original": "61cfa6bd25e2",
+       "patched": "8a4a79bfbcb7"
+      },
+      {
+       "offset": 6308,
+       "original": "41e01550c0",
+       "patched": "3e4e8e8abf"
+      }
+     ]
+    },
+    {
+     "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "size": 133741,
+     "source_sha256": "d0965837353e7c53d913334430b7bcf4ddd8aa3b705036408bcd90106fb7568f",
+     "patched_sha256": "81879fc168cbda5988534f8da9c447a28d3581b60aa1be93538148d786b6e97a",
+     "patches": [
+      {
+       "offset": 20576,
+       "original": "62",
+       "patched": "63"
+      },
+      {
+       "offset": 20653,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 20689,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 20705,
+       "original": "095a8bbd665cf140608907c0",
+       "patched": "f671643e3e84863d9845e3be"
+      }
+     ]
+    },
+    {
+     "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "size": 137782,
+     "source_sha256": "7ee8a296f2d1dbec0e56da7ea19ddb9f15e7491f3e3df597a8e65ed939f7d14b",
+     "patched_sha256": "ca26e351c37946b096d03097d061a900c46586c9fb6d5ea8fa7311919488eaff",
+     "patches": [
+      {
+       "offset": 24609,
+       "original": "76",
+       "patched": "77"
+      },
+      {
+       "offset": 24694,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "104b893ca4857abf3effca3ecf14873f9fd1363b5e841abddae60a3d612ccb3e575f7a"
+      },
+      {
+       "offset": 24730,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "55b116c297ce8640ccbadd"
+      },
+      {
+       "offset": 24746,
+       "original": "61cfa6bd25e2",
+       "patched": "8a4a79bfbcb7"
+      },
+      {
+       "offset": 24753,
+       "original": "41e01550c0",
+       "patched": "3e4e8e8abf"
+      }
+     ]
+    }
+   ]
+  },
+  "linga5.nif": {
+   "variants": [
+    {
+     "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "size": 137737,
+     "source_sha256": "b8fca00819faaf5d2cf364968788b956fbb4297373b7e7127ae7dea9a3eceed6",
+     "patched_sha256": "c6651e77c27ab9385366abc02ef356de4c92374bd97f485773b3e3fc784a2031",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc",
+       "patched": "455c04bdf3487abf"
+      },
+      {
+       "offset": 6258,
+       "original": "8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "accb3e5d08873f4bc72fbd0e00a2bc5d350d3db228cb3ecc5e7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "8e4f17c2cb08214039badd"
+      },
+      {
+       "offset": 6301,
+       "original": "e0b2a33c35450741a0a650c0",
+       "patched": "286572bf9fc9483ed5308dbf"
+      }
+     ]
+    },
+    {
+     "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "size": 137710,
+     "source_sha256": "cd1677163bed2497573057a0b924cbe360e11daf2ad1ecb2a92dc57afa2becf6",
+     "patched_sha256": "751f469580937f375a2c0a80890b10b47670da94351f7c53490ce6621159fd92",
+     "patches": [
+      {
+       "offset": 24545,
+       "original": "76",
+       "patched": "77"
+      },
+      {
+       "offset": 24622,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 24658,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 24674,
+       "original": "583382bd5822f640000002c0",
+       "patched": "7ad9e23de53f7b3dfbe299be"
+      }
+     ]
+    },
+    {
+     "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "size": 137782,
+     "source_sha256": "08cef6abf72562b4faceef3c7d774c77611d99ea11ec605a4414cc3314a663bc",
+     "patched_sha256": "2804d0ea4a46ceb6ae5c2cf1a64dc97b684dd606fd78d0d0521f7ae4bb7d1e17",
+     "patches": [
+      {
+       "offset": 24609,
+       "original": "76",
+       "patched": "77"
+      },
+      {
+       "offset": 24694,
+       "original": "dcfa7f3fb7fa4bbc",
+       "patched": "455c04bdf3487abf"
+      },
+      {
+       "offset": 24703,
+       "original": "8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "accb3e5d08873f4bc72fbd0e00a2bc5d350d3db228cb3ecc5e7a"
+      },
+      {
+       "offset": 24730,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "8e4f17c2cb08214039badd"
+      },
+      {
+       "offset": 24746,
+       "original": "e0b2a33c35450741a0a650c0",
+       "patched": "286572bf9fc9483ed5308dbf"
+      }
+     ]
+    }
+   ]
+  },
+  "linga6.nif": {
+   "variants": [
+    {
+     "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "size": 137703,
+     "source_sha256": "8c1e41ae415184fccc5aa16ad7c9882832a9085f994d3ccca9dfdb499785edf7",
+     "patched_sha256": "c1cb45e2ed0c09f73b8c336c762cab51ea47530ad9597c9920b7ecb8f5534594",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "0395463c4b757abff365cb3e671f873f1e4d033b496ddfbce4d2c83c827dcb3e44617a"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "130c17c240da4340b9bedd"
+      },
+      {
+       "offset": 23663,
+       "original": "9e17bebd05620541003741c0",
+       "patched": "f90c3bbf15cfc73dfcd86abf"
+      }
+     ]
+    },
+    {
+     "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "size": 137676,
+     "source_sha256": "1c1a1f6d14cd2bd2c9f8f1c949ecc239d33bcfc244829e0a0b76b4e5d0a9a052",
+     "patched_sha256": "d8f1684f2e1b49c269c68c4a84e747a378e685eec95a997fc2fb6717b628fcd6",
+     "patches": [
+      {
+       "offset": 24561,
+       "original": "76",
+       "patched": "77"
+      },
+      {
+       "offset": 41984,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 42020,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 42036,
+       "original": "9667a1bd5c58ec408015d9bf",
+       "patched": "85a00a3f9447983c41d9c0bd"
+      }
+     ]
+    },
+    {
+     "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "size": 137748,
+     "source_sha256": "9f133373b992be55ffdd1835d94822c6dd4aa0d21172468fe884409ea80253cb",
+     "patched_sha256": "77c18606d9cada57d0c59fc18f5ad9351fcbec4efd867e75181150ff34601ace",
+     "patches": [
+      {
+       "offset": 24625,
+       "original": "76",
+       "patched": "77"
+      },
+      {
+       "offset": 42056,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "0395463c4b757abff365cb3e671f873f1e4d033b496ddfbce4d2c83c827dcb3e44617a"
+      },
+      {
+       "offset": 42092,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "130c17c240da4340b9bedd"
+      },
+      {
+       "offset": 42108,
+       "original": "9e17bebd05620541003741c0",
+       "patched": "f90c3bbf15cfc73dfcd86abf"
+      }
+     ]
+    }
+   ]
+  },
+  "linga7.nif": {
+   "variants": [
+    {
+     "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "size": 137737,
+     "source_sha256": "da0a9dde766c733996e01f923a59e59a252e8ce12ecf662930be42ebd7e57416",
+     "patched_sha256": "00471c638e30d6aa386f1904d388ab9b6da9956e817272232941fa27c8b35fac",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "0897463c4c757abfe465cb3e681f873fd055033b4e6ddfbc89d2c83c757dcb3e49617a"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "c0e715c272ea4340d71cde"
+      },
+      {
+       "offset": 23663,
+       "original": "b033c9bd360a0d41408536c0",
+       "patched": "541f59bf5939c33db5aa3fbf"
+      }
+     ]
+    },
+    {
+     "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "size": 133741,
+     "source_sha256": "b9437539b56727733a7c5ebceceb55388d173f9fd5fa12429354b703fce59f7d",
+     "patched_sha256": "e7488e08b9497a578f6eb202429542b17b8e3ae634002cfb3c5392e50cf6e63b",
+     "patches": [
+      {
+       "offset": 20592,
+       "original": "62",
+       "patched": "63"
+      },
+      {
+       "offset": 38015,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 38051,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 38067,
+       "original": "ae2fa8bd6c98f54080c6c3bf",
+       "patched": "586ba53ecae017bb67c8393e"
+      }
+     ]
+    },
+    {
+     "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "size": 137782,
+     "source_sha256": "daf316fd75dbcc0ef31df20dce4f0a42b1848af71a61536693d52b1453d4dccd",
+     "patched_sha256": "ee86d3fd0846ba1b7c448007e98e33269a29aae2ed5e012ca551130e84c9652e",
+     "patches": [
+      {
+       "offset": 24625,
+       "original": "76",
+       "patched": "77"
+      },
+      {
+       "offset": 42056,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "0897463c4c757abfe465cb3e681f873fd055033b4e6ddfbc89d2c83c757dcb3e49617a"
+      },
+      {
+       "offset": 42092,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "c0e715c272ea4340d71cde"
+      },
+      {
+       "offset": 42108,
+       "original": "b033c9bd360a0d41408536c0",
+       "patched": "541f59bf5939c33db5aa3fbf"
+      }
+     ]
+    }
+   ]
+  },
+  "linga8.nif": {
+   "variants": [
+    {
+     "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "size": 137703,
+     "source_sha256": "1718f5809fc961ee40e4787e73feb1aa2ca5f0835965b479be6bff9a226a4f7f",
+     "patched_sha256": "8eb733f3aceee7bea3bad0155378721f56fd65be1fdc03d69c20da77ec4f060c",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "8f85883e1d6d72bf4c7cc43ed0b0823f76326d3e0e230dbeb876213dbdcbcf3e855e79"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "eb6c13c2f8e95b411075dc"
+      },
+      {
+       "offset": 23663,
+       "original": "3a0fcb3d7aa8024100253ac0",
+       "patched": "810456bfe674a83e4ead1abf"
+      }
+     ]
+    },
+    {
+     "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "size": 137676,
+     "source_sha256": "5b1ffd213ee88c4cbdccd9acc068e3e360863cfee4207c44db9b46a1c0d91d35",
+     "patched_sha256": "e4a656086277d4604a9ffc3414c08b5b9a34e690da0d10b664b17860129d24ba",
+     "patches": [
+      {
+       "offset": 24561,
+       "original": "76",
+       "patched": "77"
+      },
+      {
+       "offset": 41984,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 42020,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 42036,
+       "original": "f835c63e3426e74080d5e2bf",
+       "patched": "b5a02e3f0563043f9efa44be"
+      }
+     ]
+    },
+    {
+     "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "size": 138440,
+     "source_sha256": "b2fb9b4e8782fb7d48b1c3bb0b41c3da3d6efdde2a5efe19035decf34877f4a3",
+     "patched_sha256": "2ea9e0ab813e8dc1a315767dcb455454bbfe3421096e669710c283781f55dc74",
+     "patches": [
+      {
+       "offset": 25317,
+       "original": "76",
+       "patched": "77"
+      },
+      {
+       "offset": 42748,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "8f85883e1d6d72bf4c7cc43ed0b0823f76326d3e0e230dbeb876213dbdcbcf3e855e79"
+      },
+      {
+       "offset": 42784,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "eb6c13c2f8e95b411075dc"
+      },
+      {
+       "offset": 42800,
+       "original": "239c383e54d2a44000c89a3d",
+       "patched": "2ff34a40415f3dbf67d18b3f"
+      }
+     ]
+    }
+   ]
+  },
+  "linga9.nif": {
+   "variants": [
+    {
+     "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "size": 137737,
+     "source_sha256": "ef75757783f55e1e1b6dcd360a0b5234800ce801ab38f73b895025bda7ecc6c5",
+     "patched_sha256": "bf4f8e6a5486a0f1a5b7c950524871cb8aca64613e0aaca1760d122106f38e43",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "d0bffbbe438659bfb033c73e0f16693fd4de08bf1b208bbc41b4573e73b4a73e0b487b"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "00fe16c2821ab1407ad1dd"
+      },
+      {
+       "offset": 6301,
+       "original": "6257f7bd94a70741403838c0",
+       "patched": "18f450bfce57513bd2a45abf"
+      }
+     ]
+    },
+    {
+     "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "size": 137710,
+     "source_sha256": "d4bffc1b9088097fc66a45933dc7dccc1aeb448e3b033764aac576477dee8b6a",
+     "patched_sha256": "ffa802b66df28b64ee927c2960d49832850436e309950fbb2be3a5dec8a6f00e",
+     "patches": [
+      {
+       "offset": 24545,
+       "original": "76",
+       "patched": "77"
+      },
+      {
+       "offset": 24622,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 24658,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 24674,
+       "original": "1d9214bf26a8f04000bfc7bf",
+       "patched": "3c8fe63ea7bb05bf01ec443d"
+      }
+     ]
+    },
+    {
+     "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "size": 137782,
+     "source_sha256": "2e03a4442920dd80512654f5e802345b52ff96c96b6c414807ed334cea2fd4e3",
+     "patched_sha256": "b6b25141e48313c3ae07c94d09d70bd9ab49ae061bf024c0d2b590de4b92122f",
+     "patches": [
+      {
+       "offset": 24609,
+       "original": "76",
+       "patched": "77"
+      },
+      {
+       "offset": 24694,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "d0bffbbe438659bfb033c73e0f16693fd4de08bf1b208bbc41b4573e73b4a73e0b487b"
+      },
+      {
+       "offset": 24730,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "00fe16c2821ab1407ad1dd"
+      },
+      {
+       "offset": 24746,
+       "original": "6257f7bd94a70741403838c0",
+       "patched": "18f450bfce57513bd2a45abf"
+      }
+     ]
+    }
+   ]
+  },
+  "linga10.nif": {
+   "variants": [
+    {
+     "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "size": 137703,
+     "source_sha256": "2c61647a5976ddd8f94ffe0284c5c7b9188f13db2bb011c3d1e038a58b177033",
+     "patched_sha256": "67f4d13c3ad41529bb2ab5f28d6c81f7aeca157ddc1e1e1e1bed1ab08ef4cb43",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "e23cbfbbef637abf17cecb3ea29b863fc60d2abd0f59b1bd4050c43d26b7ca3e536979"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "1d0117c263fd1d413f9edc"
+      },
+      {
+       "offset": 23663,
+       "original": "fcc670bd764f0941c0103fc0",
+       "patched": "dbb05bbffdd10d3e683625bf"
+      }
+     ]
+    },
+    {
+     "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "size": 137677,
+     "source_sha256": "86549b9d210f2a09d5e55c470d637ce93c6e5d87b9fb4add8f636e3ea5120769",
+     "patched_sha256": "09c748134ac988b2d91d66e6a2dea0cbf36d32c312578e24c72ed057d5621a21",
+     "patches": [
+      {
+       "offset": 24562,
+       "original": "76",
+       "patched": "77"
+      },
+      {
+       "offset": 41985,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 42021,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 42037,
+       "original": "f47f37bdee2ff4404081c8bf",
+       "patched": "9e92b43e1d6e263d126f063e"
+      }
+     ]
+    },
+    {
+     "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "size": 137749,
+     "source_sha256": "168712feff45995b6202634ada88aabd7a6eb654ace18e36127d7918f1c262a8",
+     "patched_sha256": "643856406393dae25db1d7d233a9a5b2dff8b5dd7767b884101cb87c62c21849",
+     "patches": [
+      {
+       "offset": 24626,
+       "original": "76",
+       "patched": "77"
+      },
+      {
+       "offset": 42057,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "e23cbfbbef637abf17cecb3ea29b863fc60d2abd0f59b1bd4050c43d26b7ca3e536979"
+      },
+      {
+       "offset": 42093,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "1d0117c263fd1d413f9edc"
+      },
+      {
+       "offset": 42109,
+       "original": "fcc670bd764f0941c0103fc0",
+       "patched": "dbb05bbffdd10d3e683625bf"
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

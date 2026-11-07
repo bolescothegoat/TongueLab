@@ -1,0 +1,8 @@
+{
+  "name": "tonguelab",
+  "version-string": "1.0.0",
+  "builtin-baseline": "f77c3a8c05623fb02ff062ba41e6f5f9db97cde0",
+  "dependencies": [
+    "spdlog", "fmt", "rapidcsv", "tomlplusplus", "directxtk", "directxmath", "xbyak"
+  ]
+}
