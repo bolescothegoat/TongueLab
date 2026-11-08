@@ -9,5 +9,6 @@ Dates come from my own file timestamps and project notes on my PC; they are not 
 | 2026-10-26 | Renamed TongueLab. Mouth follows FaceLab's face; a face can ask for the tongue (`TongueOut`); shape sliders (Visual page); per-character settings. |
 | 2026-11-05 | Slide-bone patcher built as a separate tool: it contains only a table of changed bytes, never the meshes. |
 | 2026-11-07 | Live realign inside the menu and a preview tongue; a generic voice hook; ported to CommonLibSSE-NG 15.5.0 (one DLL for SE and AE); 1.0.0 prepared. |
+| 2026-11-08 | A tongue put on another character while a menu has the game paused is built at once (a model update is requested), so it shows with the menu open. Tuning previews only tongues that can slide; the Visual page previews every tongue; stock OStim tongues are marked as unable to slide. The Visual and Tuning pages freeze the tongue physics the same way. A setting for the tongue FaceLab puts on when no scene is running. A face mod finds TongueLab through an exported function (`FaceLab_TongueStatus`). |
 
 From the first commit of this repository onward, git history is the record.

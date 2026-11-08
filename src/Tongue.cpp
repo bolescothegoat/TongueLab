@@ -4,6 +4,7 @@
 #include "Tongue.h"
 #include "FaceLabAPI.h"
 #include "Npc.h"
+#include "UI.h"
 
 #include <Windows.h>
 #include <psapi.h>
@@ -82,6 +83,7 @@ namespace Tongue
 			RE::NiAVObject*   checkedFor{ nullptr };  // the tongue node the lines below were worked out for
 			RE::NiAVObject*   anchor{ nullptr };      // null = this tongue cannot slide
 			RE::NiPoint3      restPos{};
+			float             axis[3][3]{ { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };  // the slider axes in the anchor's parent frame: Y is along the tongue's own length
 			float             slide{ 0.0f };          // 0 = fully inside, 1 = fully out
 			Clock::time_point equippedAt{};
 			Clock::time_point lastTry{};
@@ -89,6 +91,10 @@ namespace Tongue
 			Clock::time_point lastBeat{};
 			Clock::time_point askedAt{};            // the last moment a FaceLab face asked for the tongue
 			Clock::time_point lastEquipTry{};
+			RE::FormID        directItem{ 0 };      // a tongue we put on this actor ourselves (no OStim scene): taken off again a moment after the face ends
+			Clock::time_point lastDirectTry{};
+			bool              directDiagDone{ false };  // the one-time 'our tongue is not showing' report was written
+			int               directModel{ -1 };    // the model index of that tongue (to notice when another is asked for)
 			bool              weEquipped{ false };  // we asked OStim for this tongue (so we take it off again when the face is over)
 			float             reach{ 1.0f };        // how far out a FaceLab-asked tongue goes: 0..1 of the normal fully-out place
 			float             askBlend{ 0.0f };     // 0..1: how much of the "Asked" offsets applies now
@@ -96,8 +102,20 @@ namespace Tongue
 			float             over{ 0.0f };         // ...and how much further than that (TongueOut above 1.0)
 			bool              faceSeen{ false };    // FaceLab has drawn this actor's face while this tongue was on
 			bool              speechHold{ false };  // last pulled in by a spoken line, until it is fully out again (fast in, slow out)
+			bool              resetSent{ false };   // the reset that goes before the freeze has been sent (the freeze follows a moment later)
+			std::chrono::steady_clock::time_point resetAt{};
+			bool              frozen{ false };      // the simulated tongue bones are frozen while the Tuning page is open (see FreezeForEdit)
+			std::vector<std::string> frozenBones;
 		};
 		std::unordered_map<RE::FormID, State> g_state;  // main thread only
+		// what TongueLab makes of FaceLab's tongue request, per character, for other plugins to show (TongueLab_AskStatus):
+		//   0 no request, 1 asked but this character is out of scope (TongueLab's Who settings), 2 asked, waiting for a tongue to be put on, 3 asked and a tongue is on
+		//   -1 TongueLab is switched off, -2 no tongue armor was found in OStim's equip objects
+		std::mutex                                 g_askMx;
+		std::unordered_map<RE::FormID, int>       g_askCode;
+		std::atomic<int>                          g_askGlobal{ 0 };
+		std::mutex                                 g_nearMx;
+		std::vector<Tongue::Nearby>                g_near;  // who is near the player (refreshed with the actor list)
 
 		std::mutex        g_diagMx;
 		std::vector<Diag> g_diag;
@@ -108,6 +126,7 @@ namespace Tongue
 		std::atomic<bool>            g_queued{ false };
 		std::atomic<bool>            g_wasEnabled{ true };
 		std::atomic<bool>            g_previewHold{ false };
+		std::atomic<bool>            g_previewPull{ false };  // held visible at the pulled-back place
 		std::atomic<long long>       g_editingMs{ -1 };  // when the Tuning page was last drawn (steady clock, ms); -1 = never
 		std::jthread                 g_ticker;
 
@@ -426,6 +445,7 @@ namespace Tongue
 			}
 			g_actorsAt = a_now;
 			g_actors.clear();
+			std::vector<std::pair<float, Tongue::Nearby>> nearby;
 			auto* pc = RE::PlayerCharacter::GetSingleton();
 			if (!pc) {
 				return;
@@ -438,10 +458,23 @@ namespace Tongue
 				pl->ForEachHighActor([&](RE::Actor* a) {
 					if (a && a != pc && a->Get3D() && a->GetPosition().GetDistance(pos) < 3000.0f) {
 						g_actors.push_back(a->GetHandle());
+					if (!a->IsChild() && a->GetName() && *a->GetName()) {
+						nearby.push_back({ a->GetPosition().GetDistance(pos), { a->GetName(), a->GetFormID() } });
+					}
 					}
 					return RE::BSContainer::ForEachResult::kContinue;
 				});
 			}
+			std::ranges::sort(nearby, [](const auto& l, const auto& r) { return l.first < r.first; });
+			std::vector<Tongue::Nearby> list;
+			for (const auto& [d, n] : nearby) {
+				if (list.size() >= 5) {  // the five nearest are plenty to pick from
+					break;
+				}
+				list.push_back(n);
+			}
+			std::lock_guard lk(g_nearMx);
+			g_near = std::move(list);
 		}
 
 		bool InScope(RE::Actor* a, const Config::Settings& s)
@@ -760,6 +793,56 @@ namespace Tongue
 			}
 		}
 
+		// The Tuning page forces an engine update of the whole tongue every tick (PushIfEditing). If that update puts the shipped skin data back, the Visual shape is lost
+		// until the page is closed. Called right after that update: if the bone transforms in memory are no longer what we wrote, write them again, and say so in the log.
+		void VerifyVisual(RE::NiAVObject* a_root)
+		{
+			if (!a_root || g_visual.empty()) {
+				return;
+			}
+			static std::unordered_set<const void*> s_intactLogged;
+			static auto                            s_lastChangedLog = Clock::now() - std::chrono::seconds(10);
+			std::vector<RE::BSGeometry*> geoms;
+			CollectGeometry(a_root, geoms);
+			for (auto* g : geoms) {
+				auto* si = g->GetGeometryRuntimeData().skinInstance.get();
+				if (!si || !si->skinData) {
+					continue;
+				}
+				const void* key = si->skinData.get();
+				const auto  it = g_visual.find(key);
+				if (it == g_visual.end() || !it->second.ok || it->second.failed) {
+					continue;
+				}
+				auto& vs = it->second;
+				if (!MemOk(vs.first, vs.stride * vs.written.size(), true)) {
+					continue;
+				}
+				float worst = 0.0f;
+				for (std::size_t i = 0; i < vs.written.size(); ++i) {
+					XfData now;
+					std::memcpy(&now, vs.first + i * vs.stride + vs.xf, sizeof now);
+					for (int k = 0; k < 9; ++k) {
+						worst = std::max(worst, std::fabs(now.r[k] - vs.written[i].r[k]));
+					}
+					for (int k = 0; k < 3; ++k) {
+						worst = std::max(worst, std::fabs(now.t[k] - vs.written[i].t[k]));
+					}
+				}
+				if (worst > 1e-4f) {
+					for (std::size_t i = 0; i < vs.written.size(); ++i) {
+						std::memcpy(vs.first + i * vs.stride + vs.xf, &vs.written[i], sizeof(XfData));
+					}
+					if (Clock::now() - s_lastChangedLog > std::chrono::seconds(3)) {
+						s_lastChangedLog = Clock::now();
+						logger::info("Visual: the Tuning page's geometry update changed the bone transforms of '{}' (largest difference {:.4f}); our Visual shape was written back", g->name.c_str(), worst);
+					}
+				} else if (s_intactLogged.insert(key).second) {
+					logger::info("Visual: the Tuning page's geometry update left the bone transforms of '{}' as we wrote them (so a wrong size on screen is not the skin data)", g->name.c_str());
+				}
+			}
+		}
+
 		// While the Tuning page is on screen the game is paused and the engine does not refresh the actors' scene graphs, so a changed local position of the
 		// slide bone is not drawn until the game runs again. Push it through ourselves, and only then (in normal play the engine and the cloth physics do it).
 		void CollectNodes(RE::NiAVObject* a_node, std::vector<RE::NiAVObject*>& a_out)
@@ -775,7 +858,7 @@ namespace Tongue
 			}
 		}
 
-		void PushIfEditing(RE::NiAVObject* a_node)
+		void PushIfEditing(RE::NiAVObject* a_node, RE::NiAVObject* a_skin = nullptr)
 		{
 			const auto last = g_editingMs.load();
 			const auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now().time_since_epoch()).count();
@@ -797,11 +880,177 @@ namespace Tongue
 			data.flags.set(RE::NiUpdateData::Flag::kDirty);
 			a_node->UpdateDownwardPass(data, 0);
 			const RE::NiPoint3 delta = a_node->world.translate - before[0];
+			std::size_t        moved = 0;
 			if (delta.Length() > 1e-4f) {
 				for (std::size_t i = 1; i < nodes.size(); ++i) {
 					if ((nodes[i]->world.translate - before[i]).Length() < 1e-4f) {
 						nodes[i]->world.translate += delta;
+						++moved;
 					}
+				}
+			}
+			// The tongue's own geometry is skinned to these bones but is not under them, so the push above never reached it: its bone matrices are only
+			// refreshed when the geometry itself is updated. Without this the rigid part stays where it was and only the loose end follows.
+			if (a_skin) {
+				RE::NiUpdateData skinData{};
+				skinData.time = 0.0f;
+				skinData.flags.set(RE::NiUpdateData::Flag::kDirty);
+				a_skin->UpdateDownwardPass(skinData, 0);
+				VerifyVisual(a_skin);
+			}
+			if (Config::Get().debug) {
+				static auto        s_lastLog = Clock::now() - std::chrono::seconds(5);
+				static RE::NiPoint3 s_lastLocal{ 1e9f, 0.0f, 0.0f };
+				const bool         changed = (a_node->local.translate - s_lastLocal).Length() > 0.01f;
+				if (changed && Clock::now() - s_lastLog > std::chrono::milliseconds(150)) {
+					s_lastLog = Clock::now();
+					s_lastLocal = a_node->local.translate;
+					std::string all;
+					for (auto* n : nodes) {
+						all += std::format(" [{} local=({:.2f},{:.2f},{:.2f}) world=({:.2f},{:.2f},{:.2f})]", n->name.c_str(), n->local.translate.x, n->local.translate.y, n->local.translate.z,
+							n->world.translate.x, n->world.translate.y, n->world.translate.z);
+					}
+					logger::info("EDITPUSH anchor world moved by ({:.2f},{:.2f},{:.2f}) in this push, followed-by-hand={}, geometry-updated={}:{}", delta.x, delta.y, delta.z, moved, a_skin ? "yes" : "no", all);
+				}
+			}
+		}
+
+		// The sliders (out / sideways / up) are measured in a frame whose Y runs along the tongue's own length (from the anchor towards the tip), not along the
+		// parent bone's Y, which is a good 20 degrees off: otherwise "forward" slides the tongue diagonally. Worked out once per tongue from the first child bone.
+		void WorkOutAxis(State& st, const char* a_who)
+		{
+			float id[3][3]{ { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
+			std::memcpy(st.axis, id, sizeof id);
+			auto* node = st.anchor ? st.anchor->AsNode() : nullptr;
+			if (!node) {
+				return;
+			}
+			for (auto& c : node->GetChildren()) {
+				if (!c) {
+					continue;
+				}
+				const RE::NiPoint3 t = c->local.translate;
+				const float        len = t.Length();
+				if (len < 0.05f) {
+					continue;
+				}
+				const RE::NiPoint3 d = st.anchor->local.rotate * (t * (1.0f / len));  // towards the tip, in the anchor's parent frame
+				const float        dl = d.Length();
+				if (dl < 0.5f) {
+					return;
+				}
+				const RE::NiPoint3 f = d * (1.0f / dl);
+				const float        cs = f.y;  // dot with (0,1,0)
+				if (cs < 0.5f) {  // more than 60 degrees off: this is not the layout we know, keep the old axes
+					logger::info("[{}] slider axes: the tongue runs {:.0f} degrees off the old Y axis, keeping the old axes", a_who, std::acos(std::clamp(cs, -1.0f, 1.0f)) * 57.2958f);
+					return;
+				}
+				// shortest rotation taking (0,1,0) to f (Rodrigues)
+				const float vx = 1.0f * f.z - 0.0f * f.y;  // a x f with a = (0,1,0): (f.z, 0, -f.x)
+				const float vy = 0.0f;
+				const float vz = -f.x;
+				const float k = 1.0f / (1.0f + cs);
+				const float R[3][3] = {
+					{ 1.0f + k * (-vz * vz - vy * vy), -vz + k * (vx * vy), vy + k * (vx * vz) },
+					{ vz + k * (vx * vy), 1.0f + k * (-vx * vx - vz * vz), -vx + k * (vy * vz) },
+					{ -vy + k * (vx * vz), vx + k * (vy * vz), 1.0f + k * (-vx * vx - vy * vy) }
+				};
+				std::memcpy(st.axis, R, sizeof R);
+				logger::info("[{}] slider axes: forward follows the tongue ({:.1f} degrees from the parent bone's Y)", a_who, std::acos(std::clamp(cs, -1.0f, 1.0f)) * 57.2958f);
+				return;
+			}
+		}
+
+		RE::NiPoint3 AxisMap(const State& st, float x, float y, float z)
+		{
+			const auto& r = st.axis;
+			return RE::NiPoint3(r[0][0] * x + r[0][1] * y + r[0][2] * z, r[1][0] * x + r[1][1] * y + r[1][2] * z, r[2][0] * x + r[2][1] * y + r[2][2] * z);
+		}
+
+		// While the Tuning page is open the game is paused and the cloth physics does not step, so the simulated tip of the tongue keeps its old place while the
+		// base follows the sliders. FSMP can freeze bones (they then follow their nodes): freeze the simulated bones while the page is being used and give them back
+		// when it is not. Only the tongue's own bones are touched.
+		bool Editing()
+		{
+			const auto last = g_editingMs.load();
+			const auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now().time_since_epoch()).count();
+			return last >= 0 && nowMs - last <= 300;
+		}
+
+		void CallFsmp(const char* a_fn, RE::BSScript::IFunctionArguments* a_args)
+		{
+			if (auto* vm = RE::BSScript::Internal::VirtualMachine::GetSingleton()) {
+				RE::BSTSmartPointer<RE::BSScript::IStackCallbackFunctor> none;
+				vm->DispatchStaticCall("DynamicHDT", a_fn, a_args, none);
+			}
+		}
+
+		// Papyrus Actor.QueueNiNodeUpdate: makes the engine build the model of an item that was just equipped. While a menu has the game paused (FaceLab's menu does) another
+		// character's new tongue is in her inventory and equipped but its model is not built until the game runs again; this builds it at once (tested live on Ysolda, 2026-11-08).
+		void QueueNiNodeUpdate(RE::Actor* a_actor)
+		{
+			auto* vm = RE::BSScript::Internal::VirtualMachine::GetSingleton();
+			auto* policy = vm ? vm->GetObjectHandlePolicy() : nullptr;
+			if (!a_actor || !policy) {
+				return;
+			}
+			const auto handle = policy->GetHandleForObject(static_cast<RE::VMTypeID>(a_actor->GetFormType()), a_actor);
+			if (handle == policy->EmptyHandle()) {
+				return;
+			}
+			RE::BSTSmartPointer<RE::BSScript::IStackCallbackFunctor> none;
+			vm->DispatchMethodCall(handle, "Actor", "QueueNiNodeUpdate", RE::MakeFunctionArguments(), none);
+		}
+
+		void FreezeForEdit(RE::Actor* a_actor, State& st)
+		{
+			if (!a_actor) {
+				return;
+			}
+			const bool want = Editing() && st.anchor;
+			if (!want && st.resetSent && !st.frozen) {
+				st.resetSent = false;  // the page was left before the freeze: nothing to give back
+			}
+			if (want && !st.frozen) {
+				// The tongue is reset first, so the tongue drawn while editing is the resting pose that stays when the menu is closed (the real resting pose of the physics
+				// sags a little, about 1.5 units at the tip). FSMP carries the reset out a moment later, and a reset that lands after the freeze gives the bones their
+				// physics back (measured live: TogglePhysics returns each bone's previous state), so the freeze is sent only after a short wait.
+				if (!st.resetSent) {
+					CallFsmp("ResetPhysics", RE::MakeFunctionArguments(static_cast<RE::Actor*>(a_actor), false));
+					st.resetSent = true;
+					st.resetAt = std::chrono::steady_clock::now();
+					return;
+				}
+				if (std::chrono::duration<float>(std::chrono::steady_clock::now() - st.resetAt).count() < 0.4f) {
+					return;
+				}
+				std::vector<RE::NiAVObject*> nodes;
+				CollectNodes(st.anchor, nodes);
+				std::vector<RE::BSFixedString> names;
+				st.frozenBones.clear();
+				for (std::size_t i = 1; i < nodes.size(); ++i) {  // not the anchor: it is already driven by us
+					names.emplace_back(nodes[i]->name.c_str());
+					st.frozenBones.emplace_back(nodes[i]->name.c_str());
+				}
+				if (!names.empty()) {
+					CallFsmp("TogglePhysics", RE::MakeFunctionArguments(static_cast<RE::Actor*>(a_actor), std::move(names), false));
+					st.frozen = true;
+					if (Config::Get().debug) {
+						logger::info("[{}] tongue physics frozen for editing ({} bones)", a_actor->GetName(), st.frozenBones.size());
+					}
+				}
+			} else if (!want && st.frozen) {
+				std::vector<RE::BSFixedString> names;
+				for (auto& n : st.frozenBones) {
+					names.emplace_back(n.c_str());
+				}
+				CallFsmp("TogglePhysics", RE::MakeFunctionArguments(static_cast<RE::Actor*>(a_actor), std::move(names), true));
+				CallFsmp("ResetPhysics", RE::MakeFunctionArguments(static_cast<RE::Actor*>(a_actor), false));
+				st.frozen = false;
+				st.resetSent = false;
+				st.frozenBones.clear();
+				if (Config::Get().debug) {
+					logger::info("[{}] tongue physics given back after editing", a_actor->GetName());
 				}
 			}
 		}
@@ -809,6 +1058,8 @@ namespace Tongue
 		// ---- the preview tongue (Tuning page): a tongue on the player without a scene ----------------------------------------------------
 		std::atomic<bool>        g_prevOn{ false };
 		std::atomic<RE::FormID>  g_prevItem{ 0 };
+		std::atomic<RE::FormID>  g_prevActor{ 0x14 };  // who the preview tongue is on
+		std::atomic<int>         g_modelOverride{ -1 };  // see Tongue::SetModelOverride
 
 		std::vector<RE::FormID> SortedForms()
 		{
@@ -817,7 +1068,7 @@ namespace Tongue
 			return v;
 		}
 
-		bool PlayerHas(RE::PlayerCharacter* a_pc, RE::FormID a_id)
+		bool PlayerHas(RE::Actor* a_pc, RE::FormID a_id)
 		{
 			const auto inv = a_pc->GetInventory([a_id](RE::TESBoundObject& a_o) { return a_o.GetFormID() == a_id; });
 			return !inv.empty();
@@ -830,25 +1081,27 @@ namespace Tongue
 			if (!id) {
 				return;
 			}
-			auto* pc = RE::PlayerCharacter::GetSingleton();
+			auto* pc = g_prevActor.load() == 0x14 ? RE::PlayerCharacter::GetSingleton() : RE::TESForm::LookupByID<RE::Actor>(g_prevActor.load());
 			auto* armor = RE::TESForm::LookupByID<RE::TESObjectARMO>(id);
 			auto* mgr = RE::ActorEquipManager::GetSingleton();
 			if (pc && armor && mgr && PlayerHas(pc, id)) {  // only if it is still there (a loaded save does not have it)
 				mgr->UnequipObject(pc, armor, nullptr, 1, nullptr, false, true, false, true);
 				pc->RemoveItem(armor, 1, RE::ITEM_REMOVE_REASON::kRemove, nullptr, nullptr);
 			}
-			logger::info("preview tongue taken off ({})", a_why);
+			logger::info("preview tongue taken off {} ({})", pc ? pc->GetName() : "?", a_why);
 		}
 
 		void Tick()
 		{
 			g_queued = false;
+			UI::Flush();  // menu edits that have been still for a moment are written now, even if the menu was closed
 			if (g_prevOn.load()) {  // never leave it on the player: gone a minute after the menu is closed
 				const auto last = g_editingMs.load();
 				const auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now().time_since_epoch()).count();
-				if (last < 0 || nowMs - last > 60000) {
+				if (last < 0 || nowMs - last > (g_prevActor.load() == 0x14 ? 60000 : 120000)) {
 					RemovePreview("the menu was closed for a minute");
 					g_previewHold = false;
+					g_previewPull = false;
 				}
 			}
 			const auto now = Clock::now();
@@ -857,6 +1110,7 @@ namespace Tongue
 			dt = std::clamp(dt, 0.0f, 0.2f);
 
 			const auto& gs = Config::Get();  // the global settings; each character below gets its own copy with the per-NPC files over it
+			g_askGlobal = !gs.enabled ? -1 : (g_forms.empty() ? -2 : 0);
 			if (!gs.enabled) {
 				if (g_wasEnabled.exchange(false)) {
 					ShutdownRestore();
@@ -899,7 +1153,20 @@ namespace Tongue
 				if (const auto* fl = FaceLabAPI::Get(); fl && fl->version >= 5) {
 					faceTongue = fl->GetTongue(id);
 				}
-				const bool asked = faceTongue > 0.05f && InScope(a, s);
+				const bool inScope = InScope(a, s);
+				const bool asked = faceTongue > 0.05f && inScope;
+				{
+					const int code = faceTongue > 0.05f ? (!inScope ? 1 : (tongue ? 3 : 2)) : 0;
+					std::lock_guard lk(g_askMx);
+					if (code != 0 || g_askCode.contains(id)) {
+						const auto prev = g_askCode.find(id);
+						if (prev == g_askCode.end() ? code != 0 : prev->second != code) {  // always logged (not only with Debug): this is the answer to 'why is there no tongue'
+							static const char* const why[] = { "no request", "asked, but this character is out of scope (Who settings)", "asked, waiting for a tongue to be put on", "asked, tongue is on" };
+							logger::info("[{}] FaceLab tongue request ({:.2f}): {}", a->GetName(), faceTongue, why[std::clamp(code, 0, 3)]);
+						}
+						g_askCode[id] = code;
+					}
+				}
 				if (asked) {
 					st.askedAt = now;
 				}
@@ -914,6 +1181,71 @@ namespace Tongue
 					if (s.debug) {
 						logger::info("[{}] a FaceLab face asks for the tongue ({:.2f}) and she has none: asking OStim to equip one", a->GetName(), faceTongue);
 					}
+				}
+				const int wantModel = g_modelOverride.load() >= 0 ? g_modelOverride.load() : s.tongueModel;
+				if (st.directItem != 0 && st.directModel != wantModel && asked) {  // another model was picked: take ours off, the code below puts the new one on
+					auto* old = RE::TESForm::LookupByID<RE::TESObjectARMO>(st.directItem);
+					auto* omgr = RE::ActorEquipManager::GetSingleton();
+					if (old && omgr) {
+						omgr->UnequipObject(a, old, nullptr, 1, nullptr, false, true, false, true);
+						a->RemoveItem(old, 1, RE::ITEM_REMOVE_REASON::kRemove, nullptr, nullptr);
+						QueueNiNodeUpdate(a);  // a paused game (a menu is open) keeps the old model on screen until it is told to rebuild
+					}
+					logger::info("[{}] another tongue model was picked ({} -> {}): swapping", a->GetName(), st.directModel, wantModel);
+					st.directItem = 0;
+					st.lastDirectTry = Clock::time_point{};
+					st.lastEquipTry = Clock::time_point{};
+				}
+				// No OStim scene (a screenshot pose, a preset applied from FaceLab's menu): OStim has nothing to equip, so after its one try we put a tongue on her ourselves,
+				// the way the Tuning page's preview does, and take it off again 2.5 s after the face is over. Only a tongue WE added is ever removed.
+				if (!tongue && asked && st.equipTries >= 1 && st.directItem == 0 && now - st.lastEquipTry > std::chrono::milliseconds(1500) && now - st.lastDirectTry > std::chrono::seconds(4)) {
+					st.lastDirectTry = now;
+					const auto forms = SortedForms();
+					auto*      mgr = RE::ActorEquipManager::GetSingleton();
+					auto*      armor = !forms.empty() ? RE::TESForm::LookupByID<RE::TESObjectARMO>(forms[static_cast<std::size_t>(std::clamp(wantModel, 0, static_cast<int>(forms.size()) - 1))]) : nullptr;
+					if (armor && mgr && a->Get3D()) {
+						a->AddObjectToContainer(armor, nullptr, 1, nullptr);
+						mgr->EquipObject(a, armor, nullptr, 1, nullptr, false, true, false, true);
+						st.directItem = armor->GetFormID();
+						st.directModel = wantModel;
+						st.directDiagDone = false;
+						logger::info("[{}] no OStim scene: put a tongue on her ourselves ({} {:08X})", a->GetName(), armor->GetName(), armor->GetFormID());
+					} else {
+						logger::warn("[{}] a FaceLab face asks for the tongue but there is none to put on (tongue forms found: {})", a->GetName(), forms.size());
+					}
+				}
+				// we put a tongue on her ourselves and 1.2 s later nothing is worn: say what the engine did (once per attempt)
+				if (st.directItem != 0 && asked && !tongue && !st.directDiagDone && now - st.lastDirectTry > std::chrono::milliseconds(1200)) {
+					st.directDiagDone = true;
+					auto*       armor = RE::TESForm::LookupByID<RE::TESObjectARMO>(st.directItem);
+					std::size_t inInv = 0;
+					if (armor) {
+						const auto fid = st.directItem;
+						inInv = a->GetInventory([fid](RE::TESBoundObject& o) { return o.GetFormID() == fid; }).size();
+					}
+					auto&       biped = a->GetBiped();
+					std::string slots;
+					if (biped) {
+						for (auto idx : g_slots) {
+							if (idx < static_cast<std::size_t>(RE::BIPED_OBJECTS::kTotal)) {
+								auto& o = biped->objects[idx];
+								slots += std::format(" [slot {}: item {:08X}, mesh {}]", idx, o.item ? o.item->GetFormID() : 0u, o.partClone ? "yes" : "no");
+							}
+						}
+					}
+					logger::warn("[{}] our tongue {} ({:08X}) is not showing 1.2 s after we equipped it: in her inventory {}, biped {}, slots:{}", a->GetName(), armor ? armor->GetName() : "?", st.directItem, inInv, biped ? "yes" : "NO", slots);
+					QueueNiNodeUpdate(a);  // a paused game (a menu is open) does not build the model by itself
+					logger::info("[{}] asked the engine to build her tongue's model now (it was not built, probably because the game is paused)", a->GetName());
+				}
+				if (st.directItem != 0 && !asked && now - st.askedAt > std::chrono::milliseconds(2500)) {
+					auto* armor = RE::TESForm::LookupByID<RE::TESObjectARMO>(st.directItem);
+					auto* mgr = RE::ActorEquipManager::GetSingleton();
+					if (armor && mgr) {
+						mgr->UnequipObject(a, armor, nullptr, 1, nullptr, false, true, false, true);
+						a->RemoveItem(armor, 1, RE::ITEM_REMOVE_REASON::kRemove, nullptr, nullptr);
+						logger::info("[{}] the face is over: took our tongue off again", a->GetName());
+					}
+					st.directItem = 0;
 				}
 				// The tongue we asked OStim for is NOT taken off again when the face ends: equipping or removing armor makes the game rebuild her body (a visible flash),
 				// the next scene may want that same tongue (masturbation equips one itself), and OStim removes its equip objects at scene end anyway.
@@ -940,6 +1272,7 @@ namespace Tongue
 					st.slide = 0.0f;
 					if (st.anchor) {
 						st.restPos = st.anchor->local.translate;
+						WorkOutAxis(st, a->GetName());
 					}
 					if (s.debug) {
 						logger::info("[{}] tongue can{} slide  -  {}", a->GetName(), st.anchor ? "" : "not (yet)", TongueName(a));
@@ -950,6 +1283,7 @@ namespace Tongue
 					st.anchor = FindAnchor(tongue);
 					if (st.anchor) {
 						st.restPos = st.anchor->local.translate;
+						WorkOutAxis(st, a->GetName());
 						if (st.shown) {
 							st.slide = 1.0f;  // it was already out (shown without sliding): do not pull it back in just to slide out again
 						}
@@ -987,7 +1321,11 @@ namespace Tongue
 						st.openFor = st.closedFor = 0.0f;
 						st.slide = 0.0f;
 						tongue->SetAppCulled(true);
-						diag.push_back({ a->GetName(), true, false, false, false, 0.0f, false, 0.0f });
+						{
+							Diag dg{ a->GetName(), true, false, false, false, 0.0f, false, 0.0f };
+							dg.id = a->GetFormID();
+							diag.push_back(dg);
+						}
 						continue;
 					}
 				}
@@ -1026,9 +1364,8 @@ namespace Tongue
 				if (s.faceFollow && !asked) {
 					if (const auto* fl = FaceLabAPI::Get(); fl && fl->version >= 3) {
 						faceMouth = fl->GetMouthOpen(id);
-						if (faceMouth >= 0.0f) {
-							st.faceSeen = true;
-						}
+						// follow FaceLab's mouth only while it is drawing a face for her; once the face is released the scene's own mouth and tongue pose rule again
+						st.faceSeen = faceMouth >= 0.0f;
 						if (st.faceSeen) {
 							faceMouth = std::max(faceMouth, 0.0f);
 							// the 'goes in' value is kept at least 0.15 below the 'comes out' value: a mouth value hovering between two almost equal limits would flip the tongue in and out for ever
@@ -1086,8 +1423,13 @@ namespace Tongue
 				if (g_previewHold.load()) {
 					st.shown = true;  // testing aid: keep it out while the sliders are being tried
 					st.speechHold = false;
+				} else if (g_previewPull.load()) {
+					st.shown = false;  // testing aid: sit at the pulled-back place, visible, so 'pulls back into the mouth by' can be seen while it is dragged
+					st.speechHold = false;
+					st.slide = 0.0f;
 				}
 				bool visible = st.shown;
+				FreezeForEdit(a, st);
 				if (st.anchor && s.slide) {
 					// slide: out while it is wanted, back in otherwise; the node moves along the head's -Y, i.e. into the mouth
 					const float inSec = st.speechHold ? s.speechIn : s.slideIn;
@@ -1107,21 +1449,29 @@ namespace Tongue
 					const float eased = Ease(st.slide, s.slideEase) * st.reach;
 					const float back = 1.0f - eased;
 					const float out = eased;  // fully out = 1: the "extended" offsets apply, fully in = the "retracted" ones
-					st.anchor->local.translate = RE::NiPoint3(st.restPos.x + s.extendX * out + s.slideX * back + s.askX * st.askBlend * eased,
-						st.restPos.y + s.extendY * out - s.slideDistance * back + (st.over * s.askOver + s.askY * st.askBlend) * eased,
-						st.restPos.z + s.extendZ * out + s.slideZ * back + s.askZ * st.askBlend * eased);
-					PushIfEditing(st.anchor);
+					st.anchor->local.translate = st.restPos + AxisMap(st, s.extendX * out + s.slideX * back + s.askX * st.askBlend * eased,
+						s.extendY * out - s.slideDistance * back + (st.over * s.askOver + s.askY * st.askBlend) * eased,
+						s.extendZ * out + s.slideZ * back + s.askZ * st.askBlend * eased);
+					PushIfEditing(st.anchor, tongue);
 				} else if (st.anchor) {
-					st.anchor->local.translate = RE::NiPoint3(st.restPos.x + s.extendX, st.restPos.y + s.extendY, st.restPos.z + s.extendZ);
-					PushIfEditing(st.anchor);
+					st.anchor->local.translate = st.restPos + AxisMap(st, s.extendX, s.extendY, s.extendZ);
+					PushIfEditing(st.anchor, tongue);
 					st.slide = st.shown ? 1.0f : 0.0f;
+				}
+				if (g_previewPull.load() && !g_previewHold.load()) {
+					visible = true;
 				}
 				tongue->SetAppCulled(!visible);
 
 				if (s.debug && before != st.shown) {
 					logger::info("[{}] tongue {} (judged {:.2f}: open {:.2f} pose {:.2f} [BigAah {:.2f} Eee {:.2f} Aah {:.2f}] other-source {:.2f}, speaking={} kind={}, climax={}, slide={}, faceLab mouth={:.2f}{})", a->GetName(), st.shown ? "OUT" : "IN", mouth, mi.open, mi.pose, mi.bigAah, mi.eee, mi.aah, mi.other, speaking, kind, climax, st.anchor ? "yes" : "no", faceMouth, st.faceSeen ? " (followed)" : "");
 				}
-				diag.push_back({ a->GetName(), true, st.shown, speaking, climax, mouth, st.anchor != nullptr, st.slide });
+				{
+					Diag dg{ a->GetName(), true, st.shown, speaking, climax, mouth, st.anchor != nullptr, st.slide };
+					dg.noSlideBone = st.reported && st.anchor == nullptr;
+					dg.id = id;
+					diag.push_back(dg);
+				}
 			}
 			std::lock_guard lk(g_diagMx);
 			g_diag = std::move(diag);
@@ -1165,10 +1515,51 @@ namespace Tongue
 		}
 	}
 
+	std::vector<Nearby> NearbyList()
+	{
+	std::lock_guard lk(g_nearMx);
+	return g_near;
+	}
+
 	std::vector<Diag> Snapshot()
 	{
 		std::lock_guard lk(g_diagMx);
 		return g_diag;
+	}
+
+	// Does the tongue's mesh file carry the slide bone ("tong1 1", the one TongueLab moves)? Read from the file once per tongue: Halo's tongues have it, OStim's own stock
+	// tongues do not (they are physics tongues on the head bone), so those can only pop in and out. -1 = could not tell (a mesh packed in an archive).
+	static int MeshHasSlideBone(const RE::TESObjectARMO* a_armor)
+	{
+		static std::mutex                           s_mx;
+		static std::unordered_map<RE::FormID, int> s_cache;
+		if (!a_armor) {
+			return -1;
+		}
+		std::lock_guard lk(s_mx);
+		if (const auto it = s_cache.find(a_armor->GetFormID()); it != s_cache.end()) {
+			return it->second;
+		}
+		int result = -1;
+		for (auto* arma : a_armor->armorAddons) {
+			if (!arma || result != -1) {
+				continue;
+			}
+			for (int sex = 0; sex < 2 && result == -1; ++sex) {
+				const char* model = arma->bipedModels[sex].GetModel();
+				if (!model || !*model) {
+					continue;
+				}
+				std::ifstream f(std::string("Data/Meshes/") + model, std::ios::binary);
+				if (!f) {
+					continue;
+				}
+				const std::string bytes((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+				result = bytes.find("tong1 1") != std::string::npos ? 1 : 0;
+			}
+		}
+		s_cache[a_armor->GetFormID()] = result;
+		return result;
 	}
 
 	std::vector<std::string> TongueChoices()
@@ -1177,21 +1568,51 @@ namespace Tongue
 		int                      n = 0;
 		for (auto id : SortedForms()) {
 			const auto* armor = RE::TESForm::LookupByID<RE::TESObjectARMO>(id);
-			const std::string nm = armor && armor->GetName() && *armor->GetName() ? armor->GetName() : "(unnamed)";
+			std::string nm = armor && armor->GetName() && *armor->GetName() ? armor->GetName() : "(unnamed)";
+			if (MeshHasSlideBone(armor) == 0) {
+				nm += "  (stock mesh: cannot slide)";
+			}
 			names.push_back(std::format("{}: {}", ++n, nm));
 		}
 		return names;
 	}
 
-	void PreviewTongue(bool a_on, int a_index)
+	std::vector<TongueChoice> TongueChoiceList()
 	{
-		SKSE::GetTaskInterface()->AddTask([a_on, a_index]() {
+		std::vector<TongueChoice> out;
+		int                       n = 0, idx = 0;
+		for (auto id : SortedForms()) {
+			const auto* armor = RE::TESForm::LookupByID<RE::TESObjectARMO>(id);
+			const std::string nm = armor && armor->GetName() && *armor->GetName() ? armor->GetName() : "(unnamed)";
+			out.push_back({ std::format("{}: {}", ++n, nm), idx++, MeshHasSlideBone(armor) != 0 });
+		}
+		return out;
+	}
+
+	int PreviewIndex()
+	{
+		const auto id = g_prevItem.load();
+		if (!id) {
+			return -1;
+		}
+		const auto forms = SortedForms();
+		for (std::size_t i = 0; i < forms.size(); ++i) {
+			if (forms[i] == id) {
+				return static_cast<int>(i);
+			}
+		}
+		return -1;
+	}
+
+	void PreviewTongue(bool a_on, int a_index, std::uint32_t a_actorId)
+	{
+		SKSE::GetTaskInterface()->AddTask([a_on, a_index, a_actorId]() {
 			RemovePreview("changed");
 			if (!a_on) {
 				return;
 			}
 			const auto forms = SortedForms();
-			auto*      pc = RE::PlayerCharacter::GetSingleton();
+			RE::Actor*  pc = a_actorId == 0x14 ? RE::PlayerCharacter::GetSingleton() : RE::TESForm::LookupByID<RE::Actor>(a_actorId);
 			auto*      mgr = RE::ActorEquipManager::GetSingleton();
 			if (forms.empty() || a_index < 0 || a_index >= static_cast<int>(forms.size()) || !pc || !mgr || !pc->Get3D()) {
 				logger::warn("preview tongue: nothing to put on (tongues found: {}, picked {})", forms.size(), a_index);
@@ -1205,10 +1626,44 @@ namespace Tongue
 				pc->AddObjectToContainer(armor, nullptr, 1, nullptr);
 			}
 			mgr->EquipObject(pc, armor, nullptr, 1, nullptr, false, true, false, true);
+			g_prevActor = pc->GetFormID();
 			g_prevItem = forms[a_index];
 			g_prevOn = true;
-			logger::info("preview tongue put on the player: {} ({:08X})", armor->GetName(), forms[a_index]);
+			logger::info("preview tongue put on {}: {} ({:08X})", pc->GetName(), armor->GetName(), forms[a_index]);
+			if (a_actorId != 0x14) {
+				// another character's model is not built while the menu has the game paused: build it a moment later (the player's is built at once)
+				std::thread([a_actorId]() {
+					std::this_thread::sleep_for(std::chrono::milliseconds(1200));
+					SKSE::GetTaskInterface()->AddTask([a_actorId]() {
+						if (auto* who = RE::TESForm::LookupByID<RE::Actor>(a_actorId); who && g_prevOn.load() && g_prevActor.load() == a_actorId) {
+							QueueNiNodeUpdate(who);
+						}
+					});
+				}).detach();
+			}
 		});
+	}
+
+	int AskStatus(unsigned int a_formID)
+	{
+	if (const int g = g_askGlobal.load(); g < 0) {
+		return g;
+	}
+	std::lock_guard lk(g_askMx);
+	const auto it = g_askCode.find(a_formID);
+	return it == g_askCode.end() ? 0 : it->second;
+	}
+
+	void SetModelOverride(int a_index)
+	{
+	if (g_modelOverride.exchange(a_index) != a_index) {
+		logger::info("tongue model asked for by another plugin: {}", a_index);
+	}
+	}
+
+	int ModelOverride()
+	{
+	return g_modelOverride.load();
 	}
 
 	bool PreviewTongueOn()
@@ -1216,8 +1671,26 @@ namespace Tongue
 		return g_prevOn.load();
 	}
 
+	void SetPreviewPull(bool a_on)
+	{
+	if (g_previewPull.exchange(a_on) != a_on) {
+		logger::info("preview pull-back {}: every equipped tongue is {}", a_on ? "ON" : "off", a_on ? "held at its pulled-back place" : "back to the normal rules");
+	}
+	if (a_on) {
+		g_previewHold = false;
+	}
+	}
+
+	bool PreviewPull()
+	{
+	return g_previewPull.load();
+	}
+
 	void SetPreviewHold(bool a_on)
 	{
+		if (a_on) {
+			g_previewPull = false;
+		}
 		if (g_previewHold.exchange(a_on) != a_on) {
 			logger::info("preview hold {}: every equipped tongue is {}", a_on ? "ON" : "off", a_on ? "held out" : "back to the normal rules");
 		}
@@ -1260,4 +1733,42 @@ namespace Tongue
 			}
 		});
 	}
+}
+
+// Exports for other plugins (FaceLab's Tongue assist): the list of tongue models and which one TongueLab puts on a character itself.
+extern "C" __declspec(dllexport) int TongueLab_TongueCount()
+{
+	return static_cast<int>(Tongue::FormCount());
+}
+
+extern "C" __declspec(dllexport) int TongueLab_TongueName(int a_index, char* a_out, int a_cap)
+{
+	const auto names = Tongue::TongueChoices();
+	if (a_index < 0 || a_index >= static_cast<int>(names.size()) || !a_out || a_cap < 1) {
+		return 0;
+	}
+	std::snprintf(a_out, static_cast<std::size_t>(a_cap), "%s", names[static_cast<std::size_t>(a_index)].c_str());
+	return 1;
+}
+
+extern "C" __declspec(dllexport) void TongueLab_SetTongueModel(int a_index)
+{
+	Tongue::SetModelOverride(a_index);
+}
+
+extern "C" __declspec(dllexport) int TongueLab_GetTongueModel()
+{
+	return Tongue::ModelOverride();
+}
+
+// What TongueLab makes of FaceLab's tongue request for this character (FaceLab shows it under its tongue button). See g_askCode in Tongue.cpp for the codes.
+extern "C" __declspec(dllexport) int TongueLab_AskStatus(unsigned int a_formID)
+{
+	return Tongue::AskStatus(a_formID);
+}
+
+// the generic name a face mod looks for (it scans the loaded modules, so it never needs to know this mod's name): same answer as TongueLab_AskStatus
+extern "C" __declspec(dllexport) int FaceLab_TongueStatus(unsigned int a_formID)
+{
+	return Tongue::AskStatus(a_formID);
 }

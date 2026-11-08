@@ -64,7 +64,7 @@ namespace NpcCore
 			{ "Visual", "Tilt", &S::visTilt, -45.0f, 45.0f, "tip up (+) / down (-), degrees" },
 		};
 		const IntKey kInts[] = {
-			{ "Tongue", "Model", &S::tongueModel, 0, 10, "reserved for a later version: read, but no effect in 1.0" },
+			{ "Tongue", "Model", &S::tongueModel, 0, 99, "which tongue is put on when a face asks for one and there is no scene (index into the tongue list)" },
 			{ "Slide", "Ease", &S::slideEase, 0, 3, "0 linear, 1 smooth, 2 starts fast ends slow, 3 starts slow ends fast" },
 		};
 		const BoolKey kBools[] = {

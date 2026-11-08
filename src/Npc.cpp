@@ -25,6 +25,7 @@ namespace Npc
 		std::mutex                                g_mx;
 		std::unordered_map<std::string, Entry>    g_files;  // lower-case file name without .toml -> content
 		std::chrono::steady_clock::time_point     g_next{};
+		std::unordered_map<std::string, NpcCore::Override> g_live;  // unsaved menu edits per layer (lower-case stem)
 
 		std::string Lower(std::string s)
 		{
@@ -145,10 +146,16 @@ namespace Npc
 			in.file = key + ".toml";
 		}
 		std::lock_guard lk(g_mx);
-		if (g_files.empty()) {
+		if (g_files.empty() && g_live.empty()) {
 			return s;
 		}
 		auto layer = [&](const std::string& name, bool& flag) {
+			if (auto lv = g_live.find(name); lv != g_live.end()) {
+				NpcCore::Apply(lv->second, s);
+				in.values += lv->second.Count();
+				flag = true;
+				return;
+			}
 			auto it = g_files.find(name);
 			if (it != g_files.end() && it->second.ok) {
 				NpcCore::Apply(it->second.ov, s);
@@ -164,5 +171,81 @@ namespace Npc
 			layer(Lower(key), in.own);
 		}
 		return s;
+	}
+	Config::Settings Build(RE::Actor* a, const Config::Settings& global, const std::string& upTo, bool include)
+	{
+		Config::Settings  s = global;
+		const RE::TESNPC* base = a ? a->GetActorBase() : nullptr;
+		const std::string key = Lower(KeyOf(base));
+		const std::string stop = Lower(upTo);
+		std::lock_guard   lk(g_mx);
+		auto              layer = [&](const std::string& name) -> bool {  // true = this was the last layer wanted
+			const bool last = (name == stop);
+			if (last && !include) {
+				return true;
+			}
+			if (auto it = g_files.find(name); it != g_files.end() && it->second.ok) {
+				NpcCore::Apply(it->second.ov, s);
+			}
+			return last;
+		};
+		if (layer("_default")) {
+			return s;
+		}
+		if ((base && !base->IsUnique()) || stop == "_generic") {
+			if (layer("_generic")) {
+				return s;
+			}
+		}
+		if (!key.empty()) {
+			layer(key);
+		}
+		return s;
+	}
+
+	void SetLive(const std::string& stem, const NpcCore::Override& ov)
+	{
+		std::lock_guard lk(g_mx);
+		g_live[Lower(stem)] = ov;
+	}
+
+	void ClearLive(const std::string& stem)
+	{
+		std::lock_guard lk(g_mx);
+		g_live.erase(Lower(stem));
+	}
+
+	bool Save(const std::string& stem, const NpcCore::Override& ov, const std::string& name)
+	{
+		if (stem.empty()) {
+			return false;
+		}
+		std::error_code ec;
+		std::filesystem::create_directories(Folder(), ec);
+		const auto        path = Folder() / (stem + ".toml");
+		const std::string text = NpcCore::Serialize(ov, name);
+		{
+			std::ofstream o(path, std::ios::binary | std::ios::trunc);
+			if (o) {
+				o << text;
+				o.flush();
+			}
+			if (!o) {
+				logger::warn("NPC settings: could not write {}", std::filesystem::absolute(path, ec).string());
+				return false;
+			}
+		}
+		{
+			std::lock_guard lk(g_mx);
+			auto&           e = g_files[Lower(stem)];
+			e.seen = true;
+			std::error_code e2;
+			e.stamp = std::filesystem::last_write_time(path, e2);
+			std::vector<std::string> problems;
+			e.ok = NpcCore::Parse(text, e.ov, problems);
+			g_live.erase(Lower(stem));
+		}
+		logger::info("NPC settings: saved {} ({} setting(s)) -> {}", path.filename().string(), ov.Count(), std::filesystem::absolute(path, ec).string());
+		return true;
 	}
 }

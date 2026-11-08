@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Config.h"
+#include "NpcCore.h"
 
 #include <chrono>
 #include <filesystem>
@@ -29,6 +30,13 @@ namespace Npc
 	void Poll(std::chrono::steady_clock::time_point now);          // call often; rescans the folder every few seconds
 	// the settings that apply to this actor: `global` (TongueLab.toml) with the per-NPC layers over it
 	Config::Settings Effective(RE::Actor* a, const Config::Settings& global, Info* info = nullptr);
+
+	// What the menu needs to edit one layer: the settings of the layers BELOW `upTo` (a file stem: "_default", "_generic" or the character's key), or up to and including it.
+	Config::Settings Build(RE::Actor* a, const Config::Settings& global, const std::string& upTo, bool include);
+	// Unsaved edits drawn at once (replace that layer's file while they exist), and writing a layer's file.
+	void SetLive(const std::string& stem, const NpcCore::Override& ov);
+	void ClearLive(const std::string& stem);
+	bool Save(const std::string& stem, const NpcCore::Override& ov, const std::string& name);
 
 	[[nodiscard]] std::filesystem::path Folder();
 	[[nodiscard]] std::string           KeyOf(const RE::TESNPC* base);   // "Skyrim.esm_01A66E", empty for a form that has no plugin (created at run time)

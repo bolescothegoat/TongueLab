@@ -89,6 +89,7 @@ namespace Config
 		const auto&   s = g_s;
 		std::ofstream o(Path(), std::ios::binary | std::ios::trunc);
 		if (!o) {
+			logger::warn("TongueLab.toml could not be opened for writing: {}", std::filesystem::absolute(Path()).string());
 			return false;
 		}
 		auto b = [](bool v) { return v ? "true" : "false"; };
@@ -139,6 +140,12 @@ namespace Config
 		  << "Seconds = " << s.climaxSeconds << "   # how long after an orgasm counts as the climax\r\n\r\n"
 		  << "[Who]\r\n"
 		  << "Player  = " << b(s.player) << "\r\nOthers  = " << b(s.others) << "\r\nFemales = " << b(s.females) << "\r\nMales   = " << b(s.males) << "\r\n";
+		o.flush();
+		if (!o) {
+			logger::warn("TongueLab.toml: write failed");
+			return false;
+		}
+		logger::info("TongueLab.toml saved -> {}", std::filesystem::absolute(Path()).string());
 		return true;
 	}
 }
