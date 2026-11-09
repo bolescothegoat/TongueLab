@@ -1,4 +1,4 @@
-# TongueLab - source code and build instructions (version 1.0.0)
+# TongueLab - source code and build instructions (version 1.0.1)
 
 Free software under the GNU GPL v3 or later (see `LICENSE`). Copyright (C) 2026 Bolescothegoat. Third-party licences: `THIRD_PARTY_NOTICES.txt`.
 

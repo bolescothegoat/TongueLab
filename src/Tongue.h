@@ -37,7 +37,7 @@ namespace Tongue
 	[[nodiscard]] bool PreviewPull();
 	void SetPreviewHold(bool a_on);   // testing aid: every tongue that is equipped is held out (nothing saved)
 	[[nodiscard]] bool PreviewHold();
-	void NoteEditing();               // the Tuning page calls this every frame it is drawn
+	void NoteEditing(std::uint32_t a_character = 0);  // the Tuning / Visual page calls this every frame it is drawn (a_character: the one character being edited, 0 = everyone)
 	void Init();                     // kDataLoaded: resolves OStim's tongue forms, hooks events, starts the ticker
 	void ShutdownRestore();          // un-hide everything (mod switched off)
 	std::vector<Diag> Snapshot();    // for the menu (characters that have a tongue on right now)

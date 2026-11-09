@@ -206,8 +206,10 @@ namespace UI
 				SetScope(sc, id);
 			}
 			if (g_scope == 0) {
-				G::TextWrapped("Applies to everyone. Settings saved for a character or for the generic NPCs win over these.");
+				G::TextColored(G::ImVec4{ 1.0f, 0.8f, 0.3f, 1.0f }, "You are editing the settings for EVERYONE (TongueLab.toml). A character with settings saved of her own keeps those instead: pick 'One character' above to edit her.");
 			} else {
+				auto* who = g_scope == 2 ? ScopeActor() : nullptr;
+				G::TextColored(G::ImVec4{ 0.55f, 0.85f, 1.0f, 1.0f }, "You are editing: %s", g_scope == 1 ? "generic NPCs (guards, bandits ...)" : (who && who->GetName() && *who->GetName() ? who->GetName() : "one character"));
 				const auto stem = ScopeStem();
 				if (stem.empty()) {
 					G::TextColored(G::ImVec4{ 1.0f, 0.4f, 0.4f, 1.0f }, "This character was made while playing and has no plugin: it cannot have a file of its own.");
@@ -356,9 +358,18 @@ namespace UI
 			G::PopItemWidth();
 		}
 
+		// the pages that edit the tongue live: without the preview tongue there is nothing to watch change
+		void PreviewNote()
+		{
+			if (!Tongue::PreviewTongueOn() && !Tongue::PreviewHold()) {
+				G::TextColored(G::ImVec4{ 1.0f, 0.8f, 0.3f, 1.0f }, "Tick 'Show a tongue on ... (preview)' below to see your changes live. A tongue that FaceLab is showing is not the preview: it does not follow these sliders while you edit.");
+			}
+		}
+
 		void __stdcall PageTuning()
 		{
 			ScopeBar();
+			PreviewNote();
 			auto& s = Edit();
 			Tongue::NoteEditing();
 			for (const auto& t : Tongue::Snapshot()) {
@@ -402,15 +413,16 @@ namespace UI
 		void __stdcall PageVisual()
 		{
 			ScopeBar();
+			PreviewNote();
 			auto& s = Edit();
-			Tongue::NoteEditing();  // the Visual page edits the tongue like the Tuning page does: same frozen physics, so the tongue looks the same on both pages
+			Tongue::NoteEditing(g_scope == 2 ? g_charId : 0);  // the Visual page edits the tongue like the Tuning page does: same frozen physics, so the tongue looks the same on both pages
 			G::SeparatorText("Preview a tongue");
 			G::TextWrapped("The shape sliders below work on every tongue: Halo's and OStim's own. Halo's tongues can also slide (position sliders on the Tuning page); OStim's stock tongues only pop in and out.");
 			PreviewPicker(false, "Preview tongue", g_pickStock);
 			G::Separator();
 			auto& g = Config::Edit();
 			Check("Change the shape of the tongue", g.visual, "Off = the tongue mesh exactly as it was shipped.", true);
-			G::TextWrapped("The same sliders as the HALOS Human HDT Tongueslide BodySlide set (size, length, width, thickness, tilt), but live and with no BodySlide or mesh rebuild. Each value is the percent change from the tongue as shipped, applied to the whole tongue about its centre. Where the tongue sits is on the Tuning page.");
+			G::TextWrapped("The same sliders as the HALOS Human HDT Tongueslide BodySlide set (size, length, width, thickness, tilt), but live and with no BodySlide or mesh rebuild. Each value is the percent change from the tongue as shipped, applied to the whole tongue about its centre. Where the tongue sits is on the Tuning page. Characters wearing the very same tongue model share its shape: the one you are editing (scope: one character) shows it, and anyone else wearing that model at the same time shows it too. Give each character a different tongue (General page) to keep different shapes.");
 			G::Separator();
 			Slider("Size (all directions)", s.visSize, -60.0f, 100.0f, "%+.0f %%", "Grows or shrinks the tongue in every direction. The other three multiply with this.");
 			Slider("Length (front to back)", s.visLength, -60.0f, 150.0f, "%+.0f %%", "A longer tongue reaches further out of the mouth.");

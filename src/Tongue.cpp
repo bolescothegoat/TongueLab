@@ -17,6 +17,7 @@
 #include <map>
 #include <mutex>
 #include <regex>
+#include <set>
 #include <sstream>
 #include <thread>
 
@@ -128,12 +129,27 @@ namespace Tongue
 		std::atomic<bool>            g_previewHold{ false };
 		std::atomic<bool>            g_previewPull{ false };  // held visible at the pulled-back place
 		std::atomic<long long>       g_editingMs{ -1 };  // when the Tuning page was last drawn (steady clock, ms); -1 = never
+		std::atomic<std::uint32_t>   g_editChar{ 0 };    // the one character the Visual page is editing (0 = everyone / not one character)
 		std::jthread                 g_ticker;
 
 		std::mutex                                        g_climaxMx;
 		std::unordered_map<RE::FormID, Clock::time_point> g_climax;  // actor -> end of the climax window (event thread writes, main thread reads)
 
-		// ---- reading OStim's "equip objects" ------------------------------------------------------------------------------
+		// ---- finding the tongues: OStim's "equip objects" files, and the tongue armors themselves ---------------------------------
+		bool AddArmor(RE::TESObjectARMO* armor)
+		{
+			if (!armor || !g_forms.insert(armor->GetFormID()).second) {
+				return false;
+			}
+			const auto mask = static_cast<std::uint32_t>(armor->GetSlotMask().underlying());
+			for (std::size_t bit = 0; bit < 32; ++bit) {
+				if ((mask & (1u << bit)) && std::find(g_slots.begin(), g_slots.end(), bit) == g_slots.end()) {
+					g_slots.push_back(bit);
+				}
+			}
+			return true;
+		}
+
 		void AddForm(const std::string& a_mod, const std::string& a_id)
 		{
 			RE::FormID local = 0;
@@ -149,14 +165,75 @@ namespace Tongue
 				logger::warn("tongue form {}:{} is not an armor / not loaded", a_mod, a_id);
 				return;
 			}
-			if (g_forms.insert(armor->GetFormID()).second) {
-				const auto mask = static_cast<std::uint32_t>(armor->GetSlotMask().underlying());
-				for (std::size_t bit = 0; bit < 32; ++bit) {
-					if ((mask & (1u << bit)) && std::find(g_slots.begin(), g_slots.end(), bit) == g_slots.end()) {
-						g_slots.push_back(bit);
+			AddArmor(armor);
+		}
+
+		// The tongues are defined by the tongue mod itself (Halo's HDT Tongues: ten armors whose meshes are meshes\morten\lingas\lingaN.nif).
+		// OStim's equip-object files only list them for OStim, so a game without OStim (SexLab only) has no such files: the armors are found by their mesh path.
+		// the tongue mesh an armor shows (lower case, backslashes), or empty when it is not one of the tongue meshes
+		std::string TongueMeshKey(RE::TESObjectARMO* armor)
+		{
+			if (!armor) {
+				return {};
+			}
+			for (auto* addon : armor->armorAddons) {
+				if (!addon) {
+					continue;
+				}
+				for (auto& model : addon->bipedModels) {
+					const char* path = model.GetModel();
+					if (!path || !*path) {
+						continue;
+					}
+					std::string p(path);
+					std::ranges::transform(p, p.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+					std::ranges::replace(p, '/', '\\');
+					if (p.find("\\lingas\\linga") != std::string::npos) {
+						return p;
 					}
 				}
 			}
+			return {};
+		}
+
+		int ScanTongueArmors()
+		{
+			auto* dh = RE::TESDataHandler::GetSingleton();
+			if (!dh) {
+				return 0;
+			}
+			// other mods can carry their own armors for the very same tongue mesh (Fill Her Up does): one armor per mesh, the tongue mod's own preferred,
+			// and none for a mesh that OStim's files already gave us
+			std::set<std::string> have;
+			for (auto id : g_forms) {
+				if (auto key = TongueMeshKey(RE::TESForm::LookupByID<RE::TESObjectARMO>(id)); !key.empty()) {
+					have.insert(key);
+				}
+			}
+			const auto isOwn = [](RE::TESObjectARMO* a) {
+				const auto* file = a ? a->GetFile(0) : nullptr;
+				return file && _stricmp(file->GetFilename().data(), "Tongues.esp") == 0;
+			};
+			std::map<std::string, RE::TESObjectARMO*> best;
+			for (auto* armor : dh->GetFormArray<RE::TESObjectARMO>()) {
+				if (!armor || g_forms.contains(armor->GetFormID())) {
+					continue;
+				}
+				const auto key = TongueMeshKey(armor);
+				if (key.empty() || have.contains(key)) {
+					continue;
+				}
+				if (auto it = best.find(key); it == best.end() || (isOwn(armor) && !isOwn(it->second))) {
+					best[key] = armor;
+				}
+			}
+			int found = 0;
+			for (auto& [key, armor] : best) {
+				if (AddArmor(armor)) {
+					++found;
+				}
+			}
+			return found;
 		}
 
 		void ScanEquipObjects()
@@ -181,11 +258,15 @@ namespace Tongue
 					AddForm((*it)[1].str(), (*it)[2].str());
 				}
 			}
+			const int byMesh = ScanTongueArmors();
 			std::string slots;
 			for (auto b : g_slots) {
 				slots += " " + std::to_string(b);
 			}
-			logger::info("tongue objects: {} json file(s), {} armor form(s), biped slot(s):{}", files, g_forms.size(), slots);
+			logger::info("tongue objects: {} json file(s), {} armor form(s) ({} found by their mesh path), biped slot(s):{}", files, g_forms.size(), byMesh, slots);
+			if (g_forms.empty()) {
+				logger::warn("no tongue found: TongueLab needs a tongue mod whose armors use meshes\\morten\\lingas\\ (Halo's HDT Tongues) or OStim equip-object files for one. It will do nothing until one is installed.");
+			}
 		}
 
 		// ---- the decision, per actor, every ~16 ms ------------------------------------------------------------------------
@@ -298,12 +379,13 @@ namespace Tongue
 		// OStim's own equip objects: it tracks them and removes them at scene end
 		void OStimObject(const char* a_fn, RE::Actor* a_actor)
 		{
+			static const bool ostim = ::GetModuleHandleA("OStim.dll") != nullptr;  // without OStim there is no OActor script to call: the tongue is put on directly
 			auto* vm = RE::BSScript::Internal::VirtualMachine::GetSingleton();
-			if (!vm || !a_actor) {
+			if (!ostim || !vm || !a_actor) {
 				return;
 			}
 			RE::BSTSmartPointer<RE::BSScript::IStackCallbackFunctor> none;
-			vm->DispatchStaticCall("OActor", a_fn, RE::MakeFunctionArguments(static_cast<RE::Actor*>(a_actor), RE::BSFixedString("tongue")), none);
+			vm->DispatchStaticCall("OActor", a_fn,RE::MakeFunctionArguments(static_cast<RE::Actor*>(a_actor), RE::BSFixedString("tongue")), none);
 		}
 
 		std::string TongueName(RE::Actor* a_actor)
@@ -709,7 +791,12 @@ namespace Tongue
 					}
 					{
 						const auto nowT = Clock::now();
-						if (vs.owner != 0 && vs.owner != a_owner && nowT - vs.ownerSeen < std::chrono::seconds(2)) {
+						// The skin data is one object shared by every character wearing this tongue model. While the Visual page is editing one character, that
+						// character takes it over (so the sliders show on the one being edited); the others then show the same shape.
+						const auto editMs = g_editingMs.load();
+						const bool editorSteals = editMs >= 0 && g_editChar.load() == a_owner && a_owner != 0 &&
+						                          std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now().time_since_epoch()).count() - editMs <= 300;
+						if (!editorSteals && vs.owner != 0 && vs.owner != a_owner && nowT - vs.ownerSeen < std::chrono::seconds(2)) {
 							if (!vs.sharedWarned && vs.ok && std::memcmp(vs.applied, want, sizeof want) != 0) {
 								vs.sharedWarned = true;
 								logger::warn("Visual: the skin data of '{}' is SHARED by two characters ({:08X} and {:08X}) who want different tongue shapes: the first keeps its shape, the second gets the same one", g->name.c_str(), vs.owner, a_owner);
@@ -1701,8 +1788,9 @@ namespace Tongue
 		return g_previewHold.load();
 	}
 
-	void NoteEditing()
+	void NoteEditing(std::uint32_t a_character)
 	{
+		g_editChar = a_character;
 		g_editingMs = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now().time_since_epoch()).count();
 	}
 
