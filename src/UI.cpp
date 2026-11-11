@@ -1,6 +1,7 @@
 #include "PCH.h"
 
 #include "Config.h"
+#include "Loc.h"
 #include "Npc.h"
 #include "NpcCore.h"
 #include "SKSEMenuFramework.h"
@@ -8,7 +9,9 @@
 #include "UI.h"
 
 #include <atomic>
+#include <cstdarg>
 #include <chrono>
+#include <map>
 #include <mutex>
 
 namespace G = ImGuiMCP;
@@ -21,7 +24,7 @@ namespace UI
 		int g_saveState = 0;  // 0 nothing, 1 saved, 2 failed
 
 		// ---- what the pages edit: everyone (TongueLab.toml), the generic NPCs (_generic.toml) or one character (her own file) ----------------
-		int                    g_scope = 0;           // 0 everyone, 1 generic NPCs, 2 one character
+		int                    g_scope = 2;           // 0 everyone, 1 generic NPCs, 2 one character (the default: you, until another is picked)
 		std::uint32_t          g_charId = 0x14;       // the character of scope 2 (the player by default)
 		Config::Settings       g_scratch;             // what the scoped pages edit
 		bool                   g_scratchValid = false;
@@ -103,16 +106,74 @@ namespace UI
 			}
 		}
 
+		// ---- translated drawing: every text goes through Loc (English falls through unchanged) ------------------------------------------
+		std::string VFmt(const char* fmt, va_list ap)
+		{
+			va_list c;
+			va_copy(c, ap);
+			const int n = std::vsnprintf(nullptr, 0, fmt, c);
+			va_end(c);
+			std::string out(n > 0 ? static_cast<std::size_t>(n) : 0, '\0');
+			if (n > 0) {
+				std::vsnprintf(out.data(), out.size() + 1, fmt, ap);
+			}
+			return out;
+		}
+
+		void Text(const char* fmt, ...)
+		{
+			va_list ap;
+			va_start(ap, fmt);
+			const auto s = VFmt(Loc::T(fmt), ap);
+			va_end(ap);
+			G::TextUnformatted(s.c_str());
+		}
+
+		void TextWrapped(const char* fmt, ...)
+		{
+			va_list ap;
+			va_start(ap, fmt);
+			const auto s = VFmt(Loc::T(fmt), ap);
+			va_end(ap);
+			G::TextWrapped("%s", s.c_str());
+		}
+
+		void TextCol(const G::ImVec4 col, const char* fmt, ...)
+		{
+			va_list ap;
+			va_start(ap, fmt);
+			const auto s = VFmt(Loc::T(fmt), ap);
+			va_end(ap);
+			G::TextColored(col, "%s", s.c_str());
+		}
+
+		void SeparatorText(const char* label) { G::SeparatorText(Loc::T(label)); }
+		bool Button(const char* label) { return G::Button(Loc::L(label)); }
+		bool Checkbox(const char* label, bool* v) { return G::Checkbox(Loc::L(label), v); }
+
+		// items are English texts: translated
+		bool Combo(const char* label, int* cur, const char* const* items, int n)
+		{
+			std::vector<const char*> t;
+			for (int i = 0; i < n; ++i) {
+				t.push_back(Loc::T(items[i]));
+			}
+			return G::Combo(Loc::L(label), cur, t.data(), n);
+		}
+
+		// items are names that come from the game (characters, tongues): only the label is translated
+		bool ComboNames(const char* label, int* cur, const char* const* items, int n) { return G::Combo(Loc::L(label), cur, items, n); }
+
 		void Tip(const char* a_text)
 		{
 			if (a_text && *a_text && G::IsItemHovered()) {
-				G::SetTooltip("%s", a_text);
+				G::SetTooltip("%s", Loc::T(a_text));
 			}
 		}
 
 		void Check(const char* a_label, bool& v, const char* a_tip, bool glob = false)
 		{
-			if (G::Checkbox(a_label, &v)) {
+			if (Checkbox(a_label, &v)) {
 				Changed(glob);
 			}
 			Tip(a_tip);
@@ -121,7 +182,7 @@ namespace UI
 		void Slider(const char* a_label, float& v, float lo, float hi, const char* a_fmt, const char* a_tip, bool glob = false)
 		{
 			G::PushItemWidth(320.0f);
-			if (G::SliderFloat(a_label, &v, lo, hi, a_fmt)) {
+			if (G::SliderFloat(Loc::L(a_label), &v, lo, hi, Loc::T(a_fmt))) {
 				Changed(glob);
 			}
 			G::PopItemWidth();
@@ -131,7 +192,7 @@ namespace UI
 		void Choice(const char* a_label, int& v, const char* const* a_items, int a_count, const char* a_tip, bool glob = false)
 		{
 			G::PushItemWidth(320.0f);
-			if (G::Combo(a_label, &v, a_items, a_count)) {
+			if (Combo(a_label, &v, a_items, a_count)) {
 				Changed(glob);
 			}
 			G::PopItemWidth();
@@ -142,9 +203,9 @@ namespace UI
 		{
 			FlushNow(false);
 			if (g_saveState == 1) {
-				G::TextColored(G::ImVec4{ 0.45f, 0.90f, 0.45f, 1.0f }, "Saved.");
+				TextCol(G::ImVec4{ 0.45f, 0.90f, 0.45f, 1.0f }, "Saved.");
 			} else if (g_saveState == 2) {
-				G::TextColored(G::ImVec4{ 1.0f, 0.4f, 0.4f, 1.0f }, "Could not write the settings file (see TongueLab.log).");
+				TextCol(G::ImVec4{ 1.0f, 0.4f, 0.4f, 1.0f }, "Could not write the settings file (see TongueLab.log).");
 			}
 		}
 
@@ -157,20 +218,23 @@ namespace UI
 			g_scratchValid = false;
 		}
 
-		// top of the Timing, Tuning and Visual pages: who the sliders below are for
-		void ScopeBar()
+		// Who the Size, Timing and Position pages edit is picked here, on the Tongue Select page
+		void ScopePicker()
 		{
 			g_pageScoped = true;
-			static const char* items[] = { "Everyone (TongueLab.toml)", "Generic NPCs (guards, bandits ... they share one file)", "One character" };
-			int                sc = g_scope;
-			G::PushItemWidth(420.0f);
-			const bool scopeChanged = G::Combo("These settings are for", &sc, items, 3);
+			static const char* items[] = { "One character", "Everyone", "Generic NPCs" };
+			static const int   toScope[] = { 2, 0, 1 };  // menu order -> the scope numbers used inside (0 everyone, 1 generic, 2 one character)
+			int                shownIdx = g_scope == 2 ? 0 : (g_scope == 0 ? 1 : 2);
+			G::PushItemWidth(320.0f);
+			const bool scopeChanged = Combo("Who", &shownIdx, items, 3);
+			const int  sc = toScope[std::clamp(shownIdx, 0, 2)];
 			G::PopItemWidth();
+			Tip("Everyone = TongueLab.toml. Generic NPCs (guards, bandits) share one file. One character gets a file of her own.");
 			std::uint32_t id = g_charId;
 			if (sc == 2) {
 				std::vector<std::pair<std::string, std::uint32_t>> chars;
 				auto*                                              pc = RE::PlayerCharacter::GetSingleton();
-				chars.push_back({ std::string(pc && pc->GetName() ? pc->GetName() : "You") + " (you)", 0x14 });
+				chars.push_back({ std::string(pc && pc->GetName() ? pc->GetName() : Loc::T("You")) + Loc::T(" (you)"), 0x14 });
 				for (auto& d : Tongue::Snapshot()) {
 					if (d.id && d.id != 0x14) {
 						chars.push_back({ d.name, d.id });
@@ -196,247 +260,193 @@ namespace UI
 					ptrs.push_back(c.first.c_str());
 				}
 				G::PushItemWidth(420.0f);
-				if (G::Combo("Character", &idx, ptrs.data(), static_cast<int>(ptrs.size()))) {
+				if (ComboNames("Character", &idx, ptrs.data(), static_cast<int>(ptrs.size()))) {
 					id = chars[idx].second;
 				}
 				G::PopItemWidth();
-				Tip("You, everyone near you, and every character that has a tongue on right now. Settings saved for a character apply whenever she has a tongue. To see a change on someone with no tongue yet, press Show the tongue on her in FaceLab (look at her first).");
+				Tip("You, anyone near you, or anyone with a tongue on now.");
 			}
 			if (scopeChanged || id != g_charId) {
 				SetScope(sc, id);
 			}
-			if (g_scope == 0) {
-				G::TextColored(G::ImVec4{ 1.0f, 0.8f, 0.3f, 1.0f }, "You are editing the settings for EVERYONE (TongueLab.toml). A character with settings saved of her own keeps those instead: pick 'One character' above to edit her.");
-			} else {
-				auto* who = g_scope == 2 ? ScopeActor() : nullptr;
-				G::TextColored(G::ImVec4{ 0.55f, 0.85f, 1.0f, 1.0f }, "You are editing: %s", g_scope == 1 ? "generic NPCs (guards, bandits ...)" : (who && who->GetName() && *who->GetName() ? who->GetName() : "one character"));
-				const auto stem = ScopeStem();
-				if (stem.empty()) {
-					G::TextColored(G::ImVec4{ 1.0f, 0.4f, 0.4f, 1.0f }, "This character was made while playing and has no plugin: it cannot have a file of its own.");
-				} else {
-					G::TextWrapped("Saved to Data/SKSE/Plugins/TongueLab/%s.toml. Only the values you change are written; everything else stays as set under 'Everyone'. Delete the file to go back.", stem.c_str());
-				}
+			if (g_scope != 0 && ScopeStem().empty()) {
+				TextCol(G::ImVec4{ 1.0f, 0.4f, 0.4f, 1.0f }, "This character has no plugin, so she cannot have settings of her own.");
 			}
+		}
+
+		// top line of Size, Timing and Position: who they are editing
+		void EditingLine()
+		{
+			g_pageScoped = true;
+			auto*       who = g_scope == 2 ? ScopeActor() : nullptr;
+			std::string name = g_scope == 0 ? Loc::T("everyone") : (g_scope == 1 ? Loc::T("generic NPCs") : (who && who->GetName() && *who->GetName() ? who->GetName() : Loc::T("one character")));
+			TextCol(G::ImVec4{ 0.55f, 0.85f, 1.0f, 1.0f }, "Editing: %s", name.c_str());
 			G::Separator();
 		}
 
-		void __stdcall PageGeneral()
+		// ---- 1. Tongue Select: who, which tongue, preview -----------------------------------------------------------------------------------
+		void __stdcall PageSelect()
 		{
-			g_pageScoped = false;
-			auto& s = Config::Edit();
-			Check("Take over the OStim tongue", s.enabled, "Off = OStim shows and hides the tongue the way it always did.");
-			G::TextWrapped("OStim puts the tongue on the instant it picks an expression, before the mouth has opened, and takes it off after the mouth has closed. This mod holds the tongue back until the mouth is actually open, pulls it in as the mouth starts to close, and keeps it in while a voice mod is saying a line.");
-			G::Separator();
-			G::Text("Who it applies to");
-			Check("The player", s.player, "");
-			G::SameLine();
-			Check("Everyone else", s.others, "");
-			Check("Female actors", s.females, "");
-			G::SameLine();
-			Check("Male actors", s.males, "");
-			G::Separator();
-			Check("Debug log", s.debug, "Writes every tongue decision to TongueLab.log (Documents/My Games/Skyrim Special Edition/SKSE).");
-			G::Text("Tongue armors found: %d", static_cast<int>(Tongue::FormCount()));
-			if (::GetModuleHandleA("FaceLab.dll")) {
-				// only shown when FaceLab is installed: it is the tongue FaceLab's Show tongue button puts on when no OStim scene is running
-				const auto names = Tongue::TongueChoices();
-				if (!names.empty()) {
-					G::Separator();
-					G::SeparatorText("Tongue for FaceLab and screenshots");
-					G::TextWrapped("In a scene, OStim chooses the tongue. When you use FaceLab's Show tongue button with no scene running (a screenshot, a posed face), nothing supplies one, so this is the tongue FaceLab puts on.");
-					std::vector<const char*> ptrs;
-					for (auto& n : names) {
-						ptrs.push_back(n.c_str());
-					}
-					auto& cfg = Config::Edit();
-					int   pick = std::clamp(cfg.tongueModel, 0, static_cast<int>(ptrs.size()) - 1);
-					G::PushItemWidth(320.0f);
-					if (G::Combo("Tongue to show", &pick, ptrs.data(), static_cast<int>(ptrs.size()))) {
-						cfg.tongueModel = pick;
-						Changed(true);
-					}
-					G::PopItemWidth();
-					Tip("Changing it swaps the tongue she has now. Tongues marked 'stock mesh' cannot slide, they just appear.");
-				}
-			}
-			G::Separator();
-			static bool resetArmed = false;
-			if (!resetArmed) {
-				if (G::Button("Reset ALL settings to default")) {
-					resetArmed = true;
-				}
-			} else {
-				G::TextColored(G::ImVec4{ 1.0f, 0.7f, 0.3f, 1.0f }, "This puts every TongueLab setting (all pages) back to the shipped defaults.");
-				if (G::Button("Yes, reset everything")) {
-					s = Config::Settings{};
-					resetArmed = false;
-					Changed(true);
-				}
-				G::SameLine();
-				if (G::Button("Cancel")) {
-					resetArmed = false;
-				}
-			}
-			SaveNote();
-		}
-
-		void __stdcall PageTiming()
-		{
-			ScopeBar();
+			ScopePicker();
 			auto& s = Edit();
-			auto& g = Config::Edit();
-			static const char* source[] = { "As drawn on screen (recommended)", "As requested by OStim or a voice mod" };
-			Choice("Mouth is measured", g.mouthSource, source, 2, "Which mouth value decides when the tongue comes out. If the tongue never appears, try the second option and tell me.", true);
-			static const char* rule[] = { "Any open mouth", "Only OStim's tongue pose (ignores moans and talking)" };
-			Choice("Tongue comes out for", g.mouthRule, rule, 2, "The tongue pose is the mouth OStim makes when it wants the tongue out. Moans and talking use other mouth shapes, so they no longer bring the tongue out.", true);
-			Check("At climax any open mouth counts", g.climaxAnyMouth, "Ahegao style expressions use other mouth shapes than OStim's tongue pose.", true);
-			Slider("Size of OStim's tongue pose", g.poseLevel, 0.05f, 1.0f, "%.2f", "How open OStim's tongue pose really is on screen (BigAah, Eee). The two sliders below are fractions of this, so they stay on a normal scale. Lower it if another mod makes OStim's tongue pose small.", true);
-			Slider("Tongue comes out when the mouth is", s.openThreshold, 0.05f, 1.0f, "%.2f open", "The mouth must reach this opening before the tongue appears.");
-			Slider("Tongue goes in when the mouth is below", s.closeThreshold, 0.0f, 1.0f, "%.2f open", "Higher = the tongue retreats earlier, while the mouth is still closing.");
-			Check("Follow the mouth FaceLab draws", s.faceFollow, "Once FaceLab has drawn this actor's face in a scene, the tongue is only out while FaceLab's mouth is open: it goes in when the mouth closes (climax) or yields to a voice line, and waits for the mouth to open again.");
-			Slider("FaceLab mouth open enough to come out", s.faceOpen, 0.1f, 1.5f, "%.2f", "1.0 = a full RaceMenu weight. Higher = the tongue waits until the mouth is wider.");
-			Slider("FaceLab mouth below this: tongue goes in", s.faceClose, 0.0f, 1.5f, "%.2f", "Keep this lower than the value above.");
-			Slider("Wait before it comes out", s.showDelay, 0.0f, 1.5f, "%.2f s", "The mouth has to stay open this long first.");
-			Slider("Wait before it goes in", s.hideDelay, 0.0f, 1.5f, "%.2f s", "The mouth has to stay below the 'goes in' value this long.");
-			G::Separator();
-			G::Text("Slide (needs the 'HDT Tongues - Slide Bone' meshes)");
-			Check("Slide the tongue out of and into the mouth", s.slide, "Off = the tongue pops in and out. Tongues without the slide meshes always pop.");
-			Slider("Slide out takes", s.slideOut, 0.05f, 5.0f, "%.2f s", "");
-			Slider("Slide in takes", s.slideIn, 0.05f, 5.0f, "%.2f s", "");
-			Slider("Wait for the slide bone", g.slideWait, 0.0f, 6.0f, "%.1f s", "The slide bone shows up 0.3 to 6 s after OStim equips the tongue. Until then the tongue is kept in so it can slide out; if it is not there by this time the tongue comes out without sliding. 0 = never wait.", true);
-			static const char* ease[] = { "Linear", "Smooth", "Fast then slow", "Slow then fast" };
-			Choice("Motion curve", s.slideEase, ease, 4, "How the speed changes during the slide.");
-			if (s.closeThreshold > s.openThreshold) {
-				G::TextColored(G::ImVec4{ 1.0f, 0.8f, 0.3f, 1.0f }, "The 'goes in' value is above the 'comes out' value: the tongue will flicker. Keep it lower.");
-			}
-			SaveNote();
-		}
-
-		int g_pickSlide = 0;  // the preview pickers' choices (an index into their own list)
-		int g_pickStock = 0;
-
-		// A preview tongue on the character these settings are for (one selected above), otherwise on you. a_sliding: the list of tongues that have the slide bone
-		// (Halo's, for the Tuning page, whose position sliders only work on those); false: every tongue (for the Visual page: the shape sliders work on all of them).
-		void PreviewPicker(bool a_slidingOnly, const char* a_combo, int& a_pick)
-		{
-			std::vector<Tongue::TongueChoice> list;
-			for (auto& t : Tongue::TongueChoiceList()) {
-				if (!a_slidingOnly || t.slides) {
-					list.push_back(t);
-					if (!a_slidingOnly && !t.slides) {
-						list.back().name += "  (cannot slide)";
-					}
+			Tongue::NoteEditing();
+			std::vector<Tongue::TongueChoice> list = Tongue::TongueChoiceList();
+			for (auto& t : list) {
+				if (!t.slides) {
+					t.name += Loc::T("  (cannot slide)");
 				}
 			}
 			if (list.empty()) {
-				G::TextWrapped("%s", a_slidingOnly ? "No tongue with a slide bone was found. Install Halo's HDT Tongues and run the Slide Bone Patcher (see the README)." : "No tongues were found.");
+				TextWrapped("No tongues were found. Install Halo's HDT Tongues (see the README).");
+				SaveNote();
 				return;
 			}
-			std::vector<const char*> ptrs;
-			for (auto& t : list) {
-				ptrs.push_back(t.name.c_str());
-			}
-			a_pick = std::clamp(a_pick, 0, static_cast<int>(list.size()) - 1);
 			const std::uint32_t prevId = (g_scope == 2 && g_charId != 0) ? g_charId : 0x14;
-			std::string         prevName = "my character";
+			std::string         prevName = Loc::T("my character");
 			if (prevId != 0x14) {
 				if (auto* act = RE::TESForm::LookupByID<RE::Actor>(prevId); act && act->GetName() && *act->GetName()) {
 					prevName = act->GetName();
 				}
 			}
-			const int curIdx = Tongue::PreviewIndex();
-			bool      on = Tongue::PreviewTongueOn() && std::ranges::any_of(list, [curIdx](const Tongue::TongueChoice& t) { return t.index == curIdx; });
-			if (G::Checkbox(std::format("Show a tongue on {} (preview)##{}", prevName, a_slidingOnly ? "s" : "x").c_str(), &on)) {
-				Tongue::PreviewTongue(on, list[static_cast<std::size_t>(a_pick)].index, prevId);
-				Tongue::SetPreviewHold(on);
+			// the preview shows the tongue picked here; with none picked, the one the character wears now, else the first
+			const auto previewIndex = [&]() {
+				if (s.tongueUse > 0) {
+					return std::clamp(s.tongueUse - 1, 0, static_cast<int>(list.size()) - 1);
+				}
+				const int worn = Tongue::WornTongueIndex(prevId);
+				return worn >= 0 ? worn : 0;
+			};
+			const bool previewOn = Tongue::PreviewTongueOn();
+
+			SeparatorText("Tongue");
+			std::vector<std::string> shown{ Loc::T("Not chosen (the scene's own tongue)") };
+			for (auto& t : list) {
+				shown.push_back(t.name);
 			}
-			Tip("Puts the tongue picked below on the character these settings are for (you, if none is selected above) without a scene and keeps it out, so you can try the sliders right here. It is taken off again when you untick this, or a minute (two on someone else) after this menu is closed. Untick it before you save the game.");
+			std::vector<const char*> ptrs;
+			for (auto& n : shown) {
+				ptrs.push_back(n.c_str());
+			}
+			int pick = std::clamp(s.tongueUse, 0, static_cast<int>(shown.size()) - 1);
 			G::PushItemWidth(320.0f);
-			if (G::Combo(a_combo, &a_pick, ptrs.data(), static_cast<int>(ptrs.size())) && on) {
-				Tongue::PreviewTongue(true, list[static_cast<std::size_t>(a_pick)].index, prevId);
+			if (ComboNames("Tongue", &pick, ptrs.data(), static_cast<int>(ptrs.size()))) {
+				s.tongueUse = pick;
+				Changed(false);
+				if (previewOn) {
+					Tongue::PreviewTongue(true, previewIndex(), prevId);
+				}
 			}
 			G::PopItemWidth();
-		}
+			Tip("In a scene this tongue replaces the one OStim or SLO VE equips. With no scene it is the tongue FaceLab shows.");
 
-		// the pages that edit the tongue live: without the preview tongue there is nothing to watch change
-		void PreviewNote()
-		{
-			if (!Tongue::PreviewTongueOn() && !Tongue::PreviewHold()) {
-				G::TextColored(G::ImVec4{ 1.0f, 0.8f, 0.3f, 1.0f }, "Tick 'Show a tongue on ... (preview)' below to see your changes live. A tongue that FaceLab is showing is not the preview: it does not follow these sliders while you edit.");
+			SeparatorText("Preview");
+			bool        on = previewOn;
+			std::string chkText = Loc::T("Show this tongue on {}");
+			if (const auto at = chkText.find("{}"); at != std::string::npos) {
+				chkText.replace(at, 2, prevName);
 			}
-		}
-
-		void __stdcall PageTuning()
-		{
-			ScopeBar();
-			PreviewNote();
-			auto& s = Edit();
-			Tongue::NoteEditing();
-			for (const auto& t : Tongue::Snapshot()) {
-				if (t.noSlideBone) {
-					G::TextColored(G::ImVec4{ 1.0f, 0.8f, 0.3f, 1.0f }, "%s's tongue cannot slide (a stock OStim tongue, or Halo's tongue without the Slide Bone Patch): the position sliders below do nothing to it. Pick a Halo tongue and run the Slide Bone Patcher (see the README).", t.name.c_str());
-				}
+			chkText += "###prev";
+			if (G::Checkbox(chkText.c_str(), &on)) {
+				Tongue::PreviewTongue(on, previewIndex(), prevId);
+				Tongue::SetPreviewHold(on);
 			}
+			Tip("A preview only: it comes off when you untick it or a minute after you close the menu. Untick it before you save.");
 			{
 				bool hold = Tongue::PreviewHold();
-				if (G::Checkbox("Keep the tongue out while I edit (testing)", &hold)) {
+				if (Checkbox("Keep the tongue out while I edit", &hold)) {
 					Tongue::SetPreviewHold(hold);
 				}
-				Tip("Start a scene once so the tongue is equipped, then tick this: the tongue stays out and every change below is drawn as you drag it. Not saved; it is off every time the game starts. Untick it when you are done.");
 				bool pull = Tongue::PreviewPull();
-				if (G::Checkbox("Show the tongue pulled back while I edit (testing)", &pull)) {
+				if (Checkbox("Keep the tongue in the mouth while I edit", &pull)) {
 					Tongue::SetPreviewPull(pull);
 				}
-				Tip("'Keep the tongue out' hides the effect of 'Pulls back into the mouth by': that value only matters while the tongue is pulled in. Tick this one instead and the tongue sits visibly at its pulled-back place, so dragging that slider (and the Retracted ones) moves the whole tongue where you can see it. The tongue has to be equipped first (start a scene, or use Show a tongue on ... below). Not saved; off every time the game starts.");
+				Tip("Testing aids, not saved.");
 			}
-			G::Separator();
-			G::TextWrapped("Where the tongue is. Units are game units; a tongue is about 3 long. Timing (when it comes out and how fast) is on the Timing page.");
-			G::TextWrapped("Preview: only the tongues that can slide are listed (Halo's, with the Slide Bone Patch). OStim's own stock tongues cannot slide, so these position sliders do nothing to them.");
-			PreviewPicker(true, "Preview tongue (can slide)", g_pickSlide);
-			G::Separator();
-			Slider("Pulls back into the mouth by", s.slideDistance, 0.0f, 15.0f, "%.1f", "How far the tongue travels back. About 6 is the length of the tongue.");
-			G::Text("Where the tongue sits when fully OUT (relative to its normal place)");
-			Slider("Out: sideways", s.extendX, -6.0f, 6.0f, "%.1f", "Shifts the extended tongue sideways.");
-			Slider("Out: forward / back", s.extendY, -6.0f, 6.0f, "%.1f", "Pushes the extended tongue further out (+) or pulls it back (-).");
-			Slider("Out: up / down", s.extendZ, -6.0f, 6.0f, "%.1f", "Raises (+) or lowers (-) the extended tongue.");
-			G::Text("A tongue a FaceLab face asks for (TongueOut), added to the place above");
-			Slider("Asked: sideways", s.askX, -10.0f, 10.0f, "%.1f", "In a blowjob the normal place is where the shaft is: move the tongue beside it.");
-			Slider("Asked: forward / back", s.askY, -10.0f, 10.0f, "%.1f", "");
-			Slider("Asked: up / down", s.askZ, -10.0f, 10.0f, "%.1f", "Lower (-) puts the tongue under the shaft.");
-			Slider("Asked: further per 1.0 above 1.0", s.askOver, 0.0f, 10.0f, "%.1f", "TongueOut 150 = 0.5 x this further out.");
-			G::Text("Where it sits when pulled back in");
-			Slider("Retracted position: sideways", s.slideX, -6.0f, 6.0f, "%.1f", "Shifts the tongue sideways while it is pulled back.");
-			Slider("Retracted position: up / down", s.slideZ, -6.0f, 6.0f, "%.1f", "Shifts the tongue up (+) or down (-) while it is pulled back.");
+			{
+				auto& s = Config::Edit();  // the general switches are global, not the picked character's
+				SeparatorText("General");
+				Check("Take over the OStim tongue", s.enabled, "Off = OStim shows and hides the tongue itself.", true);
+				Check("The player", s.player, "", true);
+				G::SameLine();
+				Check("Everyone else", s.others, "", true);
+				Check("Female actors", s.females, "", true);
+				G::SameLine();
+				Check("Male actors", s.males, "", true);
+				{
+					// language: "Automatic" follows the game's language; the rest are the files in TongueLab/Languages
+					static std::vector<std::string>              langs;
+					static std::chrono::steady_clock::time_point lastScan{};
+					const auto                                   nowT = std::chrono::steady_clock::now();
+					if (langs.empty() || nowT - lastScan > std::chrono::seconds(3)) {
+						langs = Loc::Available();
+						lastScan = nowT;
+					}
+					std::vector<std::string> shown{ Loc::T("Automatic (the game's language)") };
+					shown.insert(shown.end(), langs.begin(), langs.end());
+					int pick = 0;
+					if (Config::Get().language != "auto") {
+						for (std::size_t i = 0; i < langs.size(); ++i) {
+							if (langs[i] == Config::Get().language) {
+								pick = static_cast<int>(i) + 1;
+							}
+						}
+					}
+					std::vector<const char*> ptrs;
+					for (auto& n : shown) {
+						ptrs.push_back(n.c_str());
+					}
+					G::PushItemWidth(320.0f);
+					if (ComboNames("Language", &pick, ptrs.data(), static_cast<int>(ptrs.size()))) {
+						s.language = pick == 0 ? std::string("auto") : langs[static_cast<std::size_t>(pick) - 1];
+						Loc::Set(s.language);
+						Changed(true);
+					}
+					G::PopItemWidth();
+					Tip("Languages are the .toml files in Data/SKSE/Plugins/TongueLab/Languages. Automatic uses the game's language.");
+					if (const auto need = Loc::FontAdvice(); !need.empty()) {
+						TextCol(G::ImVec4{ 1.0f, 0.8f, 0.3f, 1.0f }, "This language needs the font '%s' in SKSE Menu Framework (its settings page, Font), otherwise its letters show as ????. Restart the game after changing it.", need.c_str());
+					}
+				}
+				static bool resetArmed = false;
+				if (!resetArmed) {
+					if (Button("Reset ALL settings to default")) {
+						resetArmed = true;
+					}
+				} else {
+					TextCol(G::ImVec4{ 1.0f, 0.7f, 0.3f, 1.0f }, "This puts every TongueLab setting back to the shipped defaults.");
+					if (Button("Yes, reset everything")) {
+						s = Config::Settings{};
+						resetArmed = false;
+						Changed(true);
+					}
+					G::SameLine();
+					if (Button("Cancel")) {
+						resetArmed = false;
+					}
+				}
+			}
 			SaveNote();
 		}
 
-		void __stdcall PageVisual()
+		// ---- 2. Size ----------------------------------------------------------------------------------------------------------------------------
+		void __stdcall PageSize()
 		{
-			ScopeBar();
-			PreviewNote();
+			EditingLine();
 			auto& s = Edit();
-			Tongue::NoteEditing(g_scope == 2 ? g_charId : 0);  // the Visual page edits the tongue like the Tuning page does: same frozen physics, so the tongue looks the same on both pages
-			G::SeparatorText("Preview a tongue");
-			G::TextWrapped("The shape sliders below work on every tongue: Halo's and OStim's own. Halo's tongues can also slide (position sliders on the Tuning page); OStim's stock tongues only pop in and out.");
-			PreviewPicker(false, "Preview tongue", g_pickStock);
-			G::Separator();
 			auto& g = Config::Edit();
-			Check("Change the shape of the tongue", g.visual, "Off = the tongue mesh exactly as it was shipped.", true);
-			G::TextWrapped("The same sliders as the HALOS Human HDT Tongueslide BodySlide set (size, length, width, thickness, tilt), but live and with no BodySlide or mesh rebuild. Each value is the percent change from the tongue as shipped, applied to the whole tongue about its centre. Where the tongue sits is on the Tuning page. Characters wearing the very same tongue model share its shape: the one you are editing (scope: one character) shows it, and anyone else wearing that model at the same time shows it too. Give each character a different tongue (General page) to keep different shapes.");
-			G::Separator();
-			Slider("Size (all directions)", s.visSize, -60.0f, 100.0f, "%+.0f %%", "Grows or shrinks the tongue in every direction. The other three multiply with this.");
-			Slider("Length (front to back)", s.visLength, -60.0f, 150.0f, "%+.0f %%", "A longer tongue reaches further out of the mouth.");
-			Slider("Width (side to side)", s.visWidth, -60.0f, 100.0f, "%+.0f %%", "");
-			Slider("Thickness (up / down)", s.visThickness, -60.0f, 100.0f, "%+.0f %%", "");
-			Slider("Tilt: tip up (+) / down (-)", s.visTilt, -45.0f, 45.0f, "%+.0f deg", "Turns the whole tongue about its centre, side to side axis.");
-			G::Separator();
-			if (G::Button("Back to the tongue as shipped")) {
+			Tongue::NoteEditing(g_scope == 2 ? g_charId : 0);
+			Check("Change the tongue's shape", g.visual, "Off = the tongue exactly as shipped.", true);
+			Slider("Size", s.visSize, -60.0f, 100.0f, "%+.0f %%", "");
+			Slider("Length", s.visLength, -60.0f, 150.0f, "%+.0f %%", "");
+			Slider("Width", s.visWidth, -60.0f, 100.0f, "%+.0f %%", "");
+			Slider("Thickness", s.visThickness, -60.0f, 100.0f, "%+.0f %%", "");
+			Slider("Tilt", s.visTilt, -45.0f, 45.0f, "%+.0f deg", "Tip up (+) or down (-).");
+			if (Button("Reset")) {
 				s.visSize = s.visLength = s.visWidth = s.visThickness = s.visTilt = 0.0f;
 				Changed(false);
 			}
 			G::SameLine();
-			if (G::Button("The HALOS author's preset")) {
-				// Size Small 20, X Size Big 10, Z Size Small 30 of "[AtomicSkull]HALOS Tongue Preset", turned into per-axis percentages with the measurements of the HALOS tongue mesh
+			if (Button("HALOS preset")) {
 				s.visSize = 0.0f;
 				s.visLength = -21.0f;
 				s.visWidth = -5.0f;
@@ -444,47 +454,137 @@ namespace UI
 				s.visTilt = 0.0f;
 				Changed(false);
 			}
-			Tip("Its Back 15 and Up 32 are positions, not shape: use the Tuning page for those. The shipped slider data does not fit most of the ten tongue meshes exactly, so this is the intent of the preset, not its noise.");
-			const auto info = Tongue::Visual();
-			G::Separator();
-			if (info.failed > 0) {
-				G::TextColored(G::ImVec4{ 1.0f, 0.4f, 0.4f, 1.0f }, "%d tongue skin data could not be recognised and was left alone. See TongueLab.log, lines starting 'Visual:'.", info.failed);
-			} else if (info.recognised > 0) {
-				G::TextColored(G::ImVec4{ 0.45f, 0.90f, 0.45f, 1.0f }, "Working: %d tongue skin data recognised.", info.recognised);
-			} else {
-				G::Text("Nothing yet: the shape is applied the first time a tongue is on screen.");
+			Tip("The HALOS author's size preset.");
+			SaveNote();
+		}
+
+		// ---- 3. Timing --------------------------------------------------------------------------------------------------------------------------
+		void __stdcall PageTiming()
+		{
+			EditingLine();
+			auto& s = Edit();
+			auto& g = Config::Edit();
+			SeparatorText("Mouth");
+			{
+				// what the tongue is judging right now, so the numbers below can be set against something you can see
+				const std::uint32_t want = g_scope == 2 ? g_charId : 0;
+				bool                found = false;
+				for (const auto& d : Tongue::Snapshot()) {
+					if (want && d.id != want) {
+						continue;
+					}
+					found = true;
+					G::ProgressBar(std::clamp(d.mouth, 0.0f, 1.0f), G::ImVec2{ 320.0f, 0.0f }, std::format("{:.2f}", d.mouth).c_str());
+					if (d.asked) {
+						Text("%s: a FaceLab face asks for the tongue, so the mouth does not matter.", d.name.c_str());
+					} else if (d.faceFollowed) {
+						Text("%s: FaceLab draws her face, so its mouth counts: %.2f (the tongue comes out at %.2f or more).", d.name.c_str(), d.faceMouth, s.faceOpen);
+					} else {
+						Text("%s: mouth %.2f now. Out at %.2f or more, in below %.2f.", d.name.c_str(), d.mouth, s.openThreshold, s.closeThreshold);
+					}
+					break;
+				}
+				if (!found) {
+					Text("No tongue on right now: start a scene, or tick the preview on Tongue Select, to see the mouth reading here.");
+				}
+				Text("0 = mouth closed, 1.0 = OStim's full tongue pose (wide open).");
+			}
+			Slider("Comes out when the mouth is", s.openThreshold, 0.05f, 1.0f, "%.2f open", "");
+			Slider("Goes in when the mouth is below", s.closeThreshold, 0.0f, 1.0f, "%.2f open", "Keep this lower than the one above.");
+			Slider("Wait before it comes out", s.showDelay, 0.0f, 1.5f, "%.2f s", "");
+			Slider("Wait before it goes in", s.hideDelay, 0.0f, 1.5f, "%.2f s", "");
+			if (s.closeThreshold > s.openThreshold) {
+				TextCol(G::ImVec4{ 1.0f, 0.8f, 0.3f, 1.0f }, "'Goes in' is above 'comes out': the tongue will flicker.");
+			}
+			SeparatorText("Slide");
+			Check("Slide in and out", s.slide, "Off = the tongue pops. Tongues without the slide meshes always pop.");
+			Slider("Slide out takes", s.slideOut, 0.05f, 5.0f, "%.2f s", "");
+			Slider("Slide in takes", s.slideIn, 0.05f, 5.0f, "%.2f s", "");
+			static const char* ease[] = { "Linear", "Smooth", "Fast then slow", "Slow then fast" };
+			Choice("Motion", s.slideEase, ease, 4, "");
+			if (G::TreeNode(Loc::L("Advanced"))) {
+				static const char* source[] = { "As drawn on screen", "As requested by OStim or a voice mod" };
+				Choice("Mouth is measured", g.mouthSource, source, 2, "Try the second if the tongue never appears.", true);
+				static const char* rule[] = { "Any open mouth", "Only OStim's tongue pose" };
+				Choice("Tongue comes out for", g.mouthRule, rule, 2, "'Only OStim's tongue pose' ignores moans and talking.", true);
+				Check("At climax any open mouth counts", g.climaxAnyMouth, "", true);
+				Slider("Size of OStim's tongue pose", g.poseLevel, 0.05f, 1.0f, "%.2f", "Lower it if another mod makes OStim's tongue pose small.", true);
+				Slider("Wait for the slide bone", g.slideWait, 0.0f, 6.0f, "%.1f s", "0 = never wait.", true);
+				Check("Follow the mouth FaceLab draws", s.faceFollow, "");
+				Slider("FaceLab mouth open enough", s.faceOpen, 0.1f, 1.5f, "%.2f", "");
+				Slider("FaceLab mouth closed enough", s.faceClose, 0.0f, 1.5f, "%.2f", "");
+				G::TreePop();
 			}
 			SaveNote();
 		}
 
+		// ---- 4. Position: the scene tongue and the FaceLab tongue -------------------------------------------------------------------------------
+		void __stdcall PagePosition()
+		{
+			EditingLine();
+			auto& s = Edit();
+			Tongue::NoteEditing();
+			for (const auto& t : Tongue::Snapshot()) {
+				if (t.noSlideBone) {
+					TextCol(G::ImVec4{ 1.0f, 0.8f, 0.3f, 1.0f }, "%s's tongue cannot slide: these sliders do nothing to it.", t.name.c_str());
+				}
+			}
+			SeparatorText("Scene Tongue");
+			Slider("Pulls back by", s.slideDistance, 0.0f, 15.0f, "%.1f", "About 6 is the length of the tongue.");
+			Slider("Out: sideways", s.extendX, -6.0f, 6.0f, "%.1f", "");
+			Slider("Out: forward / back", s.extendY, -6.0f, 6.0f, "%.1f", "");
+			Slider("Out: up / down", s.extendZ, -6.0f, 6.0f, "%.1f", "");
+			Slider("In: sideways", s.slideX, -6.0f, 6.0f, "%.1f", "Where it sits while pulled back.");
+			Slider("In: up / down", s.slideZ, -6.0f, 6.0f, "%.1f", "");
+			SeparatorText("FaceLab Tongue");
+			Slider("Sideways", s.askX, -10.0f, 10.0f, "%.1f", "Added to the Scene Tongue place.");
+			Slider("Forward / back", s.askY, -10.0f, 10.0f, "%.1f", "");
+			Slider("Up / down", s.askZ, -10.0f, 10.0f, "%.1f", "Lower puts it under the shaft in a blowjob.");
+			Slider("Further per 1.0 above 1.0", s.askOver, 0.0f, 10.0f, "%.1f", "TongueOut 150 = half of this further out.");
+			SaveNote();
+		}
+
+		// ---- 5. Voice & Climax ------------------------------------------------------------------------------------------------------------------
 		void __stdcall PageVoice()
 		{
 			g_pageScoped = false;
 			auto& s = Config::Edit();
-			Check("Tongue stays in during spoken lines", s.hideDuringLines, "Needs a voice mod that reports its lines to TongueLab (see the README). Without one nothing happens.");
-			Check("Tongue stays in during moans", s.hideDuringMoans, "Off = moans do not affect the tongue. Needs a voice mod that reports its moans to TongueLab.");
-			Slider("Goes in when a line starts, takes", s.speechIn, 0.02f, 1.0f, "%.2f s", "Shorter = the tongue is gone by the time the lips move.");
-			Slider("Comes out after a line, takes", s.speechOut, 0.05f, 2.0f, "%.2f s", "Longer = it follows the mouth opening again instead of leading it.");
-			Slider("Stays in after a line ends", s.speechGrace, 0.0f, 2.0f, "%.2f s", "Stops the tongue flicking out between two lines.");
-			G::Separator();
-			G::Text("Climax (for expression mods like Ahegao)");
-			static const char* climax[] = { "Normal rules", "Tongue may stay out while speaking", "Tongue always in" };
-			Choice("At climax", s.climaxMode, climax, 3, "Expression mods put the tongue out at climax. 'May stay out' lets it show even while a moan plays.");
-			Slider("Climax lasts", s.climaxSeconds, 1.0f, 30.0f, "%.0f s", "How long after an orgasm the climax rule applies.");
+			Check("Tongue stays in during spoken lines", s.hideDuringLines, "Needs a voice mod that reports its lines to TongueLab.");
+			Check("Tongue stays in during moans", s.hideDuringMoans, "Needs a voice mod that reports its moans to TongueLab.");
+			Slider("Goes in when a line starts, takes", s.speechIn, 0.02f, 1.0f, "%.2f s", "");
+			Slider("Comes out after a line, takes", s.speechOut, 0.05f, 2.0f, "%.2f s", "");
+			Slider("Stays in after a line ends", s.speechGrace, 0.0f, 2.0f, "%.2f s", "");
+			SeparatorText("Climax");
+			static const char* climax[] = { "Normal rules", "May stay out while speaking", "Always in" };
+			Choice("At climax", s.climaxMode, climax, 3, "");
+			Slider("Climax lasts", s.climaxSeconds, 1.0f, 30.0f, "%.0f s", "");
 			SaveNote();
 		}
 
-		void __stdcall PageLive()
+		// ---- 6. Debug (with what was the Live page, and the general switches) -----------------------------------------------------------------------
+		void __stdcall PageDebug()
 		{
-			G::TextWrapped("Actors that currently have an OStim tongue on. 'Drawn mouth' is the value the tongue is judged by.");
-			G::Separator();
+			g_pageScoped = false;
+			auto& s = Config::Edit();
+			Check("Debug log", s.debug, "Writes every decision to TongueLab.log. Leave it off for normal play; turn it on to report a problem.");
+			SeparatorText("Live");
 			const auto list = Tongue::Snapshot();
 			if (list.empty()) {
-				G::Text("None right now.");
+				Text("No tongue on right now.");
 			}
 			for (auto& d : list) {
-				G::Text("%s  -  tongue %s   mouth %.2f   slide %s %.2f%s%s", d.name.c_str(), d.shown ? "OUT" : "in", d.mouth, d.canSlide ? "yes" : "no (stock mesh)", d.slide, d.speaking ? "   speaking" : "", d.climax ? "   climax" : "");
+				Text("%s  -  tongue %s   mouth %.2f   slide %s %.2f%s%s", d.name.c_str(), Loc::T(d.shown ? "OUT" : "in"), d.mouth, Loc::T(d.canSlide ? "yes" : "no"), d.slide, d.speaking ? Loc::T("   speaking") : "", d.climax ? Loc::T("   climax") : "");
 			}
+			Text("Tongue armors found: %d", static_cast<int>(Tongue::FormCount()));
+			{
+				const auto info = Tongue::Visual();
+				if (info.failed > 0) {
+					TextCol(G::ImVec4{ 1.0f, 0.4f, 0.4f, 1.0f }, "%d tongue skin data not recognised (see TongueLab.log, 'Visual:').", info.failed);
+				} else if (info.recognised > 0) {
+					TextCol(G::ImVec4{ 0.45f, 0.90f, 0.45f, 1.0f }, "Size changes working: %d recognised.", info.recognised);
+				}
+			}
+			SaveNote();
 		}
 
 		void __stdcall OnMenuEvent(SKSEMenuFramework::Model::EventType a_type)
@@ -509,12 +609,12 @@ namespace UI
 			return;
 		}
 		SKSEMenuFramework::SetSection("TongueLab");
-		SKSEMenuFramework::AddSectionItem("General", PageGeneral);
-		SKSEMenuFramework::AddSectionItem("Timing", PageTiming);
-		SKSEMenuFramework::AddSectionItem("Tuning", PageTuning);
-		SKSEMenuFramework::AddSectionItem("Visual", PageVisual);
-		SKSEMenuFramework::AddSectionItem("Voice and climax", PageVoice);
-		SKSEMenuFramework::AddSectionItem("Live", PageLive);
+		SKSEMenuFramework::AddSectionItem(Loc::T("Tongue Select"), PageSelect);
+		SKSEMenuFramework::AddSectionItem(Loc::T("Size"), PageSize);
+		SKSEMenuFramework::AddSectionItem(Loc::T("Timing"), PageTiming);
+		SKSEMenuFramework::AddSectionItem(Loc::T("Position"), PagePosition);
+		SKSEMenuFramework::AddSectionItem(Loc::T("Voice & Climax"), PageVoice);
+		SKSEMenuFramework::AddSectionItem(Loc::T("Debug"), PageDebug);
 		SKSEMenuFramework::AddEvent(OnMenuEvent, 0.0f);
 		logger::info("SKSE Menu Framework pages registered (section: TongueLab)");
 	}

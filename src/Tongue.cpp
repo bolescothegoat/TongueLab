@@ -30,6 +30,8 @@ namespace Tongue
 		// ---- the tongues OStim (and HDT Tongues - OStim) can equip -------------------------------------------------------------
 		std::unordered_set<RE::FormID> g_forms;  // every tongue armor + its variants
 		std::vector<std::size_t>       g_slots;  // biped slot indices those armors sit in
+		// tongues of another mod that equips and drives them itself (SLO VE): their mouth is not OStim's tongue pose, so any open mouth counts for them
+		std::unordered_set<RE::FormID> g_externalForms;
 
 		// A voice mod can tell us when one of its clips (a moan / a spoken line) is playing on an actor: every loaded DLL that exports
 		//   extern "C" int TongueLab_SpeechKind(std::uint32_t formID);   // 0 silent, 1 a moan is playing, 2 a spoken line is playing (main thread)
@@ -96,6 +98,17 @@ namespace Tongue
 			Clock::time_point lastDirectTry{};
 			bool              directDiagDone{ false };  // the one-time 'our tongue is not showing' report was written
 			int               directModel{ -1 };    // the model index of that tongue (to notice when another is asked for)
+			// the scene swap ("Tongue to use"): a scene equipped tongue swapFrom, we put swapItem on instead; swapItem is ours and is taken off when the scene's tongue goes
+			RE::FormID        swapItem{ 0 };
+			RE::FormID        swapFrom{ 0 };
+			int               swapModel{ -1 };
+			Clock::time_point lastSwapTry{};
+			Clock::time_point lastSwapCheck{};
+			Clock::time_point swapBlockUntil{};
+			Clock::time_point swapFightAt{};
+			int               swapFights{ 0 };
+			Clock::time_point peekUntil{};  // a hidden tongue is shown for a moment so the engine binds its skin to the skeleton (the slide bone only exists after that)
+			Clock::time_point nextPeek{};
 			bool              weEquipped{ false };  // we asked OStim for this tongue (so we take it off again when the face is over)
 			float             reach{ 1.0f };        // how far out a FaceLab-asked tongue goes: 0..1 of the normal fully-out place
 			float             askBlend{ 0.0f };     // 0..1: how much of the "Asked" offsets applies now
@@ -188,7 +201,9 @@ namespace Tongue
 					std::string p(path);
 					std::ranges::transform(p, p.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 					std::ranges::replace(p, '/', '\\');
-					if (p.find("\\lingas\\linga") != std::string::npos) {
+					// Halo's: meshes\morten\lingas\lingaN.nif.  SLO VE's own copies: meshes\SLOVE\tongues\lingaN.nif (and ...\khajiit\, ...\argonian\)
+					static const std::regex slove(R"re(\\tongues\\([a-z]+\\)?linga\d+\.nif$)re");
+					if (p.find("\\lingas\\linga") != std::string::npos || std::regex_search(p, slove)) {
 						return p;
 					}
 				}
@@ -231,6 +246,9 @@ namespace Tongue
 			for (auto& [key, armor] : best) {
 				if (AddArmor(armor)) {
 					++found;
+					if (key.find("\\lingas\\") == std::string::npos) {
+						g_externalForms.insert(armor->GetFormID());  // not Halo's mesh folder: another mod's tongue (SLO VE)
+					}
 				}
 			}
 			return found;
@@ -418,6 +436,25 @@ namespace Tongue
 			return {};
 		}
 
+		// the form id of the tongue armor this actor wears (0 = none)
+		RE::FormID WornTongueId(RE::Actor* a_actor)
+		{
+			auto& biped = a_actor->GetBiped();
+			if (!biped) {
+				return 0;
+			}
+			for (auto idx : g_slots) {
+				if (idx >= static_cast<std::size_t>(RE::BIPED_OBJECTS::kTotal)) {
+					continue;
+				}
+				auto& o = biped->objects[idx];
+				if (o.item && o.partClone && g_forms.contains(o.item->GetFormID())) {
+					return o.item->GetFormID();
+				}
+			}
+			return 0;
+		}
+		
 		RE::NiAVObject* FindTongue(RE::Actor* a_actor)
 		{
 			auto& biped = a_actor->GetBiped();
@@ -1148,11 +1185,30 @@ namespace Tongue
 		std::atomic<RE::FormID>  g_prevActor{ 0x14 };  // who the preview tongue is on
 		std::atomic<int>         g_modelOverride{ -1 };  // see Tongue::SetModelOverride
 
-		std::vector<RE::FormID> SortedForms()
+		std::vector<RE::FormID> BuildSortedForms()
 		{
 			std::vector<RE::FormID> v(g_forms.begin(), g_forms.end());
-			std::sort(v.begin(), v.end());
+			// Halo's tongues (meshes\lingas\) first: they are the ones that can slide, so the default pick (index 0) is one of them and not OStim's stock tongue
+			const auto isHalo = [](RE::FormID id) { return TongueMeshKey(RE::TESForm::LookupByID<RE::TESObjectARMO>(id)).find("\\lingas\\") != std::string::npos; };
+			std::sort(v.begin(), v.end(), [&](RE::FormID a, RE::FormID b) {
+				const bool ha = isHalo(a), hb = isHalo(b);
+				return ha != hb ? ha : a < b;
+			});
 			return v;
+		}
+
+		// The sorted list is needed every frame for every character and by the menu thread: sort once, rebuild only if the set of tongue armors changes.
+		std::vector<RE::FormID> SortedForms()
+		{
+			static std::mutex                   mx;
+			static std::vector<RE::FormID>      cache;
+			static std::size_t                  cachedFor = static_cast<std::size_t>(-1);
+			std::lock_guard                     lk(mx);
+			if (cachedFor != g_forms.size()) {
+				cache = BuildSortedForms();
+				cachedFor = g_forms.size();
+			}
+			return cache;
 		}
 
 		bool PlayerHas(RE::Actor* a_pc, RE::FormID a_id)
@@ -1176,6 +1232,16 @@ namespace Tongue
 				pc->RemoveItem(armor, 1, RE::ITEM_REMOVE_REASON::kRemove, nullptr, nullptr);
 			}
 			logger::info("preview tongue taken off {} ({})", pc ? pc->GetName() : "?", a_why);
+		}
+
+		void DropOurTongue(RE::Actor* a_actor, RE::FormID a_id)
+		{
+			auto* armor = RE::TESForm::LookupByID<RE::TESObjectARMO>(a_id);
+			auto* mgr = RE::ActorEquipManager::GetSingleton();
+			if (armor && mgr && PlayerHas(a_actor, a_id)) {
+				mgr->UnequipObject(a_actor, armor, nullptr, 1, nullptr, false, true, false, true);
+				a_actor->RemoveItem(armor, 1, RE::ITEM_REMOVE_REASON::kRemove, nullptr, nullptr);
+			}
 		}
 
 		void Tick()
@@ -1269,7 +1335,7 @@ namespace Tongue
 						logger::info("[{}] a FaceLab face asks for the tongue ({:.2f}) and she has none: asking OStim to equip one", a->GetName(), faceTongue);
 					}
 				}
-				const int wantModel = g_modelOverride.load() >= 0 ? g_modelOverride.load() : s.tongueModel;
+				const int wantModel = g_modelOverride.load() >= 0 ? g_modelOverride.load() : (s.tongueUse > 0 ? s.tongueUse - 1 : s.tongueModel);
 				if (st.directItem != 0 && st.directModel != wantModel && asked) {  // another model was picked: take ours off, the code below puts the new one on
 					auto* old = RE::TESForm::LookupByID<RE::TESObjectARMO>(st.directItem);
 					auto* omgr = RE::ActorEquipManager::GetSingleton();
@@ -1336,6 +1402,105 @@ namespace Tongue
 				}
 				// The tongue we asked OStim for is NOT taken off again when the face ends: equipping or removing armor makes the game rebuild her body (a visible flash),
 				// the next scene may want that same tongue (masturbation equips one itself), and OStim removes its equip objects at scene end anyway.
+				// ---- the scene swap: "Tongue to use" ----------------------------------------------------------------------------------------------------
+				// A scene (OStim, SLO VE) equips ITS tongue. When a tongue was picked in the menu and the character wears a different one, we equip the picked one:
+				// the engine puts the scene's tongue aside (it stays in her inventory, unworn) and the scene removes its own item when it ends. Ours is taken off once the
+				// scene's item is gone, or when something else takes the slot. If another mod keeps putting its tongue back, we stop for a minute rather than fight it.
+				if (s.tongueUse > 0 || st.swapItem != 0) {  // nothing to do for everyone else: this runs for every character every frame
+					auto* swapMgr = RE::ActorEquipManager::GetSingleton();
+					const auto forms = SortedForms();
+					const int  wantIdx = (s.tongueUse > 0 && inScope && s.tongueUse - 1 < static_cast<int>(forms.size())) ? s.tongueUse - 1 : -1;
+					const RE::FormID worn = WornTongueId(a);
+					if (st.swapItem != 0 && now - st.lastSwapCheck > std::chrono::milliseconds(400)) {
+						st.lastSwapCheck = now;
+						const bool fromHere = st.swapFrom != 0 && PlayerHas(a, st.swapFrom);
+						if (s.debug) {
+							logger::info("[{}] swap check: worn {:08X}, ours {:08X}, scene's {:08X} {}", a->GetName(), worn, st.swapItem, st.swapFrom, fromHere ? "still in her inventory" : "gone from her inventory");
+						}
+						const char* why = nullptr;
+						const bool  building = (worn == 0 && now - st.lastSwapTry < std::chrono::seconds(6)) || now - st.lastSwapTry < std::chrono::seconds(4);  // the new model is not built yet (nothing, or the old tongue, is still worn for a moment)
+						if (building) {
+							// wait
+						} else if (worn != st.swapItem) {
+							why = "something else took the slot (our tongue is no longer worn)";
+							if (worn == 0) {
+								why = "nothing is worn any more (the scene took the tongue off)";
+							} else if (now - st.swapFightAt > std::chrono::seconds(30)) {
+								st.swapFights = 0;
+							}
+							if (worn != 0) {  // only another tongue counts as a fight, not the scene taking everything off
+								st.swapFightAt = now;
+								++st.swapFights;
+							}
+							if (st.swapFights >= 2 && worn != 0) {
+								st.swapBlockUntil = now + std::chrono::seconds(60);
+								logger::warn("[{}] another mod keeps putting its own tongue on: not swapping her tongue for a minute", a->GetName());
+							}
+						} else if (st.swapFrom != 0 && !fromHere) {
+							why = "the scene's own tongue is gone (the scene is over)";
+						} else if (wantIdx < 0) {
+							why = "no tongue is picked any more";
+						}
+						if (why) {
+							const bool restore = wantIdx < 0 && fromHere && worn == st.swapItem;  // the pick was cleared mid-scene: give her the scene's tongue back
+							DropOurTongue(a, st.swapItem);
+							logger::info("[{}] took our swapped-in tongue off again: {}", a->GetName(), why);
+							if (restore && swapMgr) {
+								if (auto* back = RE::TESForm::LookupByID<RE::TESObjectARMO>(st.swapFrom)) {
+									swapMgr->EquipObject(a, back, nullptr, 1, nullptr, false, true, false, true);
+								}
+							}
+							st.swapItem = 0;
+							st.swapFrom = 0;
+							st.swapModel = -1;
+							continue;
+						}
+					}
+					const bool ownPreview = worn != 0 && worn == g_prevItem.load();  // the Position / Size page's preview tongue is not a scene tongue
+					if (tongue && wantIdx >= 0 && swapMgr && st.directItem == 0 && !ownPreview && now >= st.swapBlockUntil && now - st.lastSwapTry > std::chrono::seconds(3)) {
+						const RE::FormID wantId = forms[static_cast<std::size_t>(wantIdx)];
+						if (st.swapItem != 0 && worn == st.swapItem && st.swapModel != wantIdx) {  // she wears ours but another one was picked since: change it
+							auto* armor = RE::TESForm::LookupByID<RE::TESObjectARMO>(wantId);
+							const auto oldOurs = st.swapItem;
+							if (armor && wantId == st.swapFrom) {  // the pick is the very tongue the scene wore: put that one back and let go
+								st.lastSwapTry = now;
+								swapMgr->EquipObject(a, armor, nullptr, 1, nullptr, false, true, false, true);
+								DropOurTongue(a, oldOurs);
+								logger::info("[{}] the pick is the scene's own tongue: gave it back and took ours off", a->GetName());
+								st.swapItem = 0;
+								st.swapFrom = 0;
+								st.swapModel = -1;
+								continue;
+							}
+							if (armor) {
+								st.lastSwapTry = now;
+								a->AddObjectToContainer(armor, nullptr, 1, nullptr);
+								swapMgr->EquipObject(a, armor, nullptr, 1, nullptr, false, true, false, true);
+								if (oldOurs != wantId) {
+									DropOurTongue(a, oldOurs);
+								}
+								st.swapItem = wantId;
+								st.swapModel = wantIdx;
+								logger::info("[{}] another tongue was picked: {:08X} -> {:08X}", a->GetName(), oldOurs, wantId);
+							}
+							continue;
+						}
+						if (worn != 0 && worn != wantId && worn != st.swapItem) {  // the scene's tongue is on, and it is not the one picked
+							auto* armor = RE::TESForm::LookupByID<RE::TESObjectARMO>(wantId);
+							if (armor) {
+								st.lastSwapTry = now;
+								st.swapFrom = worn;
+								st.swapItem = wantId;
+								st.swapModel = wantIdx;
+								st.lastSwapCheck = now;
+								a->AddObjectToContainer(armor, nullptr, 1, nullptr);
+								swapMgr->EquipObject(a, armor, nullptr, 1, nullptr, false, true, false, true);
+								logger::info("[{}] scene swap: she wears {:08X} ({}), the pick is {:08X} ({}): equipped the pick", a->GetName(), worn, TongueName(a), wantId, armor->GetName());
+								continue;  // the model is rebuilt: the next tick works with the new tongue node
+							}
+						}
+					}
+				}
 				if (!tongue) {
 					if (st.wasPresent && s.debug) {
 						logger::info("[{}] tongue gone (OStim took it off)", a->GetName());
@@ -1364,7 +1529,7 @@ namespace Tongue
 					if (s.debug) {
 						logger::info("[{}] tongue can{} slide  -  {}", a->GetName(), st.anchor ? "" : "not (yet)", TongueName(a));
 					}
-				} else if (!st.anchor && now - st.lastTry > std::chrono::milliseconds(250) && now - st.equippedAt < std::chrono::seconds(20)) {
+				} else if (!st.anchor && now - st.lastTry > std::chrono::milliseconds(250) && now - st.equippedAt < std::chrono::seconds(120)) {
 					// the skin's bone pointers are filled in a little after the armor appears: keep looking for a while
 					st.lastTry = now;
 					st.anchor = FindAnchor(tongue);
@@ -1432,7 +1597,8 @@ namespace Tongue
 
 				// OStim's own tongue expression is BigAah 100 + Eee 80. Moans and talking open the mouth with other shapes, so by default only
 				// that pose counts (unless it is the climax window, when ahegao style expressions use other shapes).
-				float mouth = (s.mouthRule == 1 && !(climax && s.climaxAnyMouth)) ? mi.pose : mi.open;
+				const bool externalTongue = g_externalForms.contains(WornTongueId(a));
+				float      mouth = (s.mouthRule == 1 && !externalTongue && !(climax && s.climaxAnyMouth)) ? mi.pose : mi.open;
 
 				bool wantOut = true;
 				if (climax && s.climaxMode == 2) {
@@ -1548,6 +1714,18 @@ namespace Tongue
 				if (g_previewPull.load() && !g_previewHold.load()) {
 					visible = true;
 				}
+				if (!st.anchor && !visible && now - st.equippedAt < std::chrono::seconds(9)) {
+					// A tongue that is hidden (held in until the mouth opens) is never bound to its skeleton by the engine: its skin has no bones, so the slide bone cannot be
+					// found, and a mouth that stays shut for a while leaves the tongue popping instead of sliding for good. So show it for a moment, a few times, right after it
+					// appears: the bone is there about 0.2 s later and the slide works whenever the mouth does open.
+					if (now >= st.nextPeek && now >= st.peekUntil) {
+						st.peekUntil = now + std::chrono::milliseconds(450);
+						st.nextPeek = now + std::chrono::milliseconds(2500);
+					}
+					if (now < st.peekUntil) {
+						visible = true;
+					}
+				}
 				tongue->SetAppCulled(!visible);
 
 				if (s.debug && before != st.shown) {
@@ -1556,6 +1734,9 @@ namespace Tongue
 				{
 					Diag dg{ a->GetName(), true, st.shown, speaking, climax, mouth, st.anchor != nullptr, st.slide };
 					dg.noSlideBone = st.reported && st.anchor == nullptr;
+					dg.faceMouth = faceMouth;
+					dg.faceFollowed = st.faceSeen;
+					dg.asked = asked;
 					dg.id = id;
 					diag.push_back(dg);
 				}
@@ -1670,10 +1851,40 @@ namespace Tongue
 		int                       n = 0, idx = 0;
 		for (auto id : SortedForms()) {
 			const auto* armor = RE::TESForm::LookupByID<RE::TESObjectARMO>(id);
-			const std::string nm = armor && armor->GetName() && *armor->GetName() ? armor->GetName() : "(unnamed)";
+			std::string nm = armor && armor->GetName() && *armor->GetName() ? armor->GetName() : "(unnamed)";
+			if (armor && (!armor->GetName() || !*armor->GetName())) {
+				// no display name (SLO VE's tongue armors): say which mod and which mesh instead
+				const auto  key = TongueMeshKey(const_cast<RE::TESObjectARMO*>(armor));
+				const auto* file = armor->GetFile(0);
+				const auto  slash = key.rfind('\\');
+				std::string mesh = key.empty() ? std::string{} : key.substr(slash == std::string::npos ? 0 : slash + 1);
+				if (mesh.size() > 4 && mesh.ends_with(".nif")) {
+					mesh.resize(mesh.size() - 4);
+				}
+				nm = std::string(file ? file->GetFilename() : "?") + " " + (mesh.empty() ? "tongue" : mesh);
+			}
 			out.push_back({ std::format("{}: {}", ++n, nm), idx++, MeshHasSlideBone(armor) != 0 });
 		}
 		return out;
+	}
+
+	int WornTongueIndex(std::uint32_t a_actorId)
+	{
+		auto* actor = RE::TESForm::LookupByID<RE::Actor>(a_actorId);
+		if (!actor) {
+			return -1;
+		}
+		const auto id = WornTongueId(actor);
+		if (!id) {
+			return -1;
+		}
+		const auto forms = SortedForms();
+		for (std::size_t i = 0; i < forms.size(); ++i) {
+			if (forms[i] == id) {
+				return static_cast<int>(i);
+			}
+		}
+		return -1;
 	}
 
 	int PreviewIndex()

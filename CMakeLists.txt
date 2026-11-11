@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(TongueLab VERSION 1.0.1 LANGUAGES CXX)
+project(TongueLab VERSION 1.2.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -18,7 +18,7 @@ set(ENABLE_SKYRIM_VR OFF CACHE BOOL "" FORCE)
 list(APPEND CMAKE_PREFIX_PATH "${DEPS_ROOT}")
 add_subdirectory("${COMMONLIB_DIR}" "${CMAKE_BINARY_DIR}/commonlib" EXCLUDE_FROM_ALL)
 
-add_library(TongueLab SHARED src/main.cpp src/Config.cpp src/NpcCore.cpp src/Npc.cpp src/Tongue.cpp src/UI.cpp)
+add_library(TongueLab SHARED src/main.cpp src/Config.cpp src/NpcCore.cpp src/Npc.cpp src/Tongue.cpp src/UI.cpp src/Loc.cpp)
 target_include_directories(TongueLab PRIVATE src)
 target_precompile_headers(TongueLab PRIVATE src/PCH.h)
 target_link_libraries(TongueLab PRIVATE CommonLibSSE::CommonLibSSE)

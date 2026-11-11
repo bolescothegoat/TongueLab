@@ -38,6 +38,7 @@ namespace Config
 		Settings s;
 		s.enabled = tbl["General"]["Enabled"].value_or(s.enabled);
 		s.debug = tbl["General"]["Debug"].value_or(s.debug);
+		s.language = tbl["General"]["Language"].value_or(s.language);
 		s.mouthSource = tbl["Mouth"]["Source"].value_or(s.mouthSource);
 		s.mouthRule = tbl["Mouth"]["Rule"].value_or(s.mouthRule);
 		s.climaxAnyMouth = tbl["Mouth"]["ClimaxAnyMouth"].value_or(s.climaxAnyMouth);
@@ -70,6 +71,7 @@ namespace Config
 		s.slideX = tbl["Slide"]["OffsetX"].value_or(s.slideX);
 		s.slideZ = tbl["Slide"]["OffsetZ"].value_or(s.slideZ);
 		s.slideEase = tbl["Slide"]["Ease"].value_or(s.slideEase);
+		s.tongueUse = std::clamp(tbl["Tongue"]["Use"].value_or(s.tongueUse), 0, 99);
 		s.hideDuringLines = tbl["Speech"]["HideDuringLines"].value_or(s.hideDuringLines);
 		s.hideDuringMoans = tbl["Speech"]["HideDuringMoans"].value_or(s.hideDuringMoans);
 		s.speechIn = tbl["Speech"]["InSeconds"].value_or(s.speechIn);
@@ -94,7 +96,8 @@ namespace Config
 		}
 		auto b = [](bool v) { return v ? "true" : "false"; };
 		o << "# TongueLab. Everything here can be changed in the in-game menu (SKSE Menu Framework).\r\n\r\n"
-		  << "[General]\r\nEnabled = " << b(s.enabled) << "\r\nDebug   = " << b(s.debug) << "   # log every tongue decision to TongueLab.log\r\n\r\n"
+		  << "[General]\r\nEnabled = " << b(s.enabled) << "\r\nDebug   = " << b(s.debug) << "   # log every tongue decision to TongueLab.log\r\n"
+		  << "Language = \"" << s.language << "\"   # menu language: auto (the game's own) or a file name from Data/SKSE/Plugins/TongueLab/Languages\r\n\r\n"
 		  << "[Mouth]\r\n"
 		  << "Source         = " << s.mouthSource << "   # 0 = mouth as drawn on screen, 1 = mouth as requested by OStim or a voice mod\r\n"
 		  << "Rule           = " << s.mouthRule << "   # 0 = any open mouth, 1 = only OStim's tongue pose (BigAah + Eee): moans and talking do not bring the tongue out\r\n"
@@ -121,6 +124,8 @@ namespace Config
 		  << "OffsetX    = " << s.slideX << "   # extra sideways offset while retracted\r\n"
 		  << "OffsetZ    = " << s.slideZ << "   # extra up / down offset while retracted\r\n"
 		  << "Ease       = " << s.slideEase << "   # 0 linear, 1 smooth, 2 fast then slow, 3 slow then fast\r\n\r\n"
+		  << "[Tongue]\r\n"
+		  << "Use = " << s.tongueUse << "   # which tongue is put on when nothing else supplies one (a posed face with no scene). 0 = the first tongue in the list; N = the Nth in the menu's list\r\n\r\n"
 		  << "[Visual]\r\n"
 		  << "Enabled   = " << b(s.visual) << "   # change the shape of the tongue itself (whole-tongue size / length / width / thickness / tilt)\r\n"
 		  << "Size      = " << s.visSize << "   # all directions together, percent change (0 = the mesh as shipped)\r\n"

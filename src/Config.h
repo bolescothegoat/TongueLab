@@ -6,6 +6,7 @@ namespace Config
 	{
 		bool enabled{ true };
 		bool debug{ false };
+		std::string language{ "auto" };  // menu language: "auto" = the game's language, or the name of a file in TongueLab/Languages (global, never per NPC)
 
 		// when the tongue may come out / must go back in, judged from the mouth that is actually on screen
 		int   mouthSource{ 0 };        // 0 = the mouth as drawn (final), 1 = the mouth as requested (what OStim or a voice mod wrote)
@@ -34,6 +35,8 @@ namespace Config
 
 		// which tongue (linga1..10) this character always gets; 0 = whichever OStim picks. Only set per NPC (see NpcCore.h), never in TongueLab.toml
 		int tongueModel{ 0 };
+		// the tongue picked in the menu ("Tongue to use"): 0 = not chosen (the first tongue), N = the Nth entry of the list. Saved in TongueLab.toml and per character.
+		int tongueUse{ 0 };
 
 		// the tongue's own shape (the HALOS tongue sliders): percent change from the mesh as shipped, whole-tongue transforms about its centre
 		bool  visual{ true };

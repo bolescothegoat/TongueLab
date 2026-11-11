@@ -65,6 +65,7 @@ namespace NpcCore
 		};
 		const IntKey kInts[] = {
 			{ "Tongue", "Model", &S::tongueModel, 0, 99, "which tongue is put on when a face asks for one and there is no scene (index into the tongue list)" },
+			{ "Tongue", "Use", &S::tongueUse, 0, 99, "the tongue picked in the menu (0 = not chosen, N = the Nth in the list)" },
 			{ "Slide", "Ease", &S::slideEase, 0, 3, "0 linear, 1 smooth, 2 starts fast ends slow, 3 starts slow ends fast" },
 		};
 		const BoolKey kBools[] = {

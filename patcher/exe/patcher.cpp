@@ -217,7 +217,7 @@ int wmain(int argc, wchar_t** argv)
 	if (!outArg.empty()) outMod = fs::absolute(outArg, ec);
 	else if (LooksLikeModsFolder(root)) outMod = root / L"[TongueLab] Slide Bone Patch";
 	else outMod = fs::path(exePath).parent_path() / L"TongueLab Slide Bone Patch";
-	fs::path outDir = outMod / L"meshes" / L"morten" / L"lingas";
+	
 
 	OutLine(L"Searching: " + root.wstring());
 	OutLine(L"(this can take a moment on a big mods folder)");
@@ -269,43 +269,50 @@ int wmain(int argc, wchar_t** argv)
 			else skipped.push_back(tg.name);
 			continue;
 		}
-		const M* pick = nullptr;
-		if (!useArg.empty()) {
-			for (auto& m : matches)
-				if (Lower(FromUtf8(tg.variants[m.v].label)).find(Lower(useArg)) != std::wstring::npos) { pick = &m; break; }
-			if (!pick) { skipped.push_back(tg.name); continue; }
-		} else {
-			pick = &*std::min_element(matches.begin(), matches.end(), [](const M& a, const M& b) { return a.v < b.v; });
-		}
-		for (auto& m : matches)
-			if (m.v != pick->v) {
-				std::string l = tg.variants[m.v].label;
-				if (std::find(notes.begin(), notes.end(), l) == notes.end()) notes.push_back(l);
+		// one version per output folder: Halo's tongues all share one folder (so one of their versions is used), SLO VE's four folders each get theirs
+		std::map<std::string, std::vector<const M*>> buckets;
+		for (auto& m : matches) buckets[tg.variants[m.v].out].push_back(&m);
+		for (auto& kv : buckets) {
+			auto& group = kv.second;
+			const M* pick = nullptr;
+			if (!useArg.empty() && group.size() > 1) {
+				for (auto* m : group)
+					if (Lower(FromUtf8(tg.variants[m->v].label)).find(Lower(useArg)) != std::wstring::npos) { pick = m; break; }
+				if (!pick) { skipped.push_back(tg.name); continue; }
+			} else {
+				pick = *std::min_element(group.begin(), group.end(), [](const M* a, const M* b) { return a->v < b->v; });
 			}
-		const PVariant& var = tg.variants[pick->v];
-		std::vector<std::uint8_t> nd = pick->d;
-		bool good = true;
-		for (int r = 0; r < var.nruns && good; ++r) {
-			const PRun& run = var.runs[r];
-			if (run.offset + run.len > nd.size() || !std::equal(run.orig, run.orig + run.len, nd.begin() + run.offset)) { good = false; break; }
-			std::copy(run.patched, run.patched + run.len, nd.begin() + run.offset);
-		}
-		std::uint8_t nh[32];
-		if (!good || !Sha256(nd, nh) || !Same32(nh, var.dst)) {
-			OutLine(L"  " + FromUtf8(tg.name) + L": the patched result did not match its expected checksum. Nothing was written for it.");
-			skipped.push_back(tg.name);
-			continue;
-		}
-		if (!dry) {
-			fs::create_directories(outDir, ec);
-			std::ofstream f(outDir / FromUtf8(tg.name), std::ios::binary | std::ios::trunc);
-			f.write(reinterpret_cast<const char*>(nd.data()), static_cast<std::streamsize>(nd.size()));
-			if (!f) {
-				OutLine(L"  could not write " + (outDir / FromUtf8(tg.name)).wstring());
-				return 3;
+			for (auto* m : group)
+				if (m->v != pick->v) {
+					std::string l = tg.variants[m->v].label;
+					if (std::find(notes.begin(), notes.end(), l) == notes.end()) notes.push_back(l);
+				}
+			const PVariant& var = tg.variants[pick->v];
+			std::vector<std::uint8_t> nd = pick->d;
+			bool good = true;
+			for (int r = 0; r < var.nruns && good; ++r) {
+				const PRun& run = var.runs[r];
+				if (run.offset + run.len > nd.size() || !std::equal(run.orig, run.orig + run.len, nd.begin() + run.offset)) { good = false; break; }
+				std::copy(run.patched, run.patched + run.len, nd.begin() + run.offset);
 			}
+			std::uint8_t nh[32];
+			if (!good || !Sha256(nd, nh) || !Same32(nh, var.dst)) {
+				OutLine(L"  " + FromUtf8(tg.name) + L": the patched result did not match its expected checksum. Nothing was written for it.");
+				skipped.push_back(tg.name);
+				continue;
+			}
+			if (!dry) {
+				fs::path outDir = outMod / fs::path(FromUtf8(var.out));
+				fs::create_directories(outDir, ec);
+				std::ofstream f(outDir / FromUtf8(tg.name), std::ios::binary | std::ios::trunc);
+				f.write(reinterpret_cast<const char*>(nd.data()), static_cast<std::streamsize>(nd.size()));
+				if (!f) {
+					OutLine(L"  could not write " + (outDir / FromUtf8(tg.name)).wstring());
+					return 3;
+				}
+			}
+			done.push_back({ tg.name, var.label, pick->p });
 		}
-		done.push_back({ tg.name, var.label, pick->p });
 	}
 
 	for (auto& d : done) OutLine(L"  patched  " + FromUtf8(d.name.c_str()) + L"   [" + FromUtf8(d.label.c_str()) + L"]");
@@ -321,10 +328,10 @@ int wmain(int argc, wchar_t** argv)
 	OutLine();
 	int rc;
 	if (dry) {
-		OutLine(L"Dry run: " + std::to_wstring(done.size()) + L" of " + std::to_wstring(TONGUE_COUNT) + L" tongues could be patched. Nothing was written.");
+		OutLine(L"Dry run: " + std::to_wstring(done.size()) + L" tongue files could be patched. Nothing was written.");
 		rc = done.empty() ? 1 : 0;
 	} else if (!done.empty()) {
-		OutLine(L"Done: " + std::to_wstring(done.size()) + L" of " + std::to_wstring(TONGUE_COUNT) + L" tongues were written to:");
+		OutLine(L"Done: " + std::to_wstring(done.size()) + L" tongue files were written to:");
 		OutLine(L"    " + outMod.wstring());
 		OutLine();
 		OutLine(L"What to do now:");

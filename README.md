@@ -13,6 +13,8 @@ An SKSE plugin for Skyrim SE / AE that takes control of OStim's tongue. OStim eq
 - Waits for the mouth: the tongue comes out when the mouth is open and goes in as it starts to close, judged from the mouth as drawn.
 - Slides: with slide-capable tongue files (`patcher/` makes them from your own copy of Halo's tongues; it contains none of the meshes) the tongue slides out of and back into the mouth.
 - Live tuning: where the tongue sits (pulled back, fully out, for a tongue a FaceLab face asks for), and its size, length, width, thickness and tilt. A preview tongue can be put on your own character without a scene.
+- Tongue Select: pick the tongue model, who it applies to (one character, everyone, generic NPCs) and preview it; the pick is also swapped in during scenes.
+- SLO VE tongues are recognised and listed beside Halo's; the menu can be translated (`Languages/English.toml` is the template, made with `tools/loc_extract.py`).
 - Per-character settings: `_default`, `_generic` and one file per NPC.
 - Voice mods: any DLL that exports `extern "C" int TongueLab_SpeechKind(std::uint32_t formID)` (0 silent, 1 moan, 2 spoken line) tells TongueLab when someone is speaking.
 - FaceLab (optional): a face can ask for the tongue (`TongueOut`), and the tongue can follow the mouth FaceLab draws.
@@ -27,4 +29,4 @@ Halo's tongues (the meshes TongueLab works with, not included), OStim Standalone
 
 ## Issues
 
-Bug reports are welcome. Please attach `TongueLab.log` from your `Documents/My Games/Skyrim Special Edition/SKSE` folder (tick "Debug log" on the General page first).
+Bug reports are welcome. Please attach `TongueLab.log` from your `Documents/My Games/Skyrim Special Edition/SKSE` folder (tick "Debug log" on the Debug page first).

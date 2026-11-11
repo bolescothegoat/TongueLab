@@ -1,14 +1,15 @@
 {
- "format": 2,
- "what": "TongueLab slide-bone patch for Halo's tongues (linga1..10.nif): re-binds the rigid part from the head to the 'tong1 1' anchor",
+ "format": 3,
+ "what": "TongueLab slide-bone patch for Halo's tongues and SLO VE's copies of them (linga1..10.nif): re-binds the rigid part from the head to the 'tong1 1' anchor. Each version has the folder its patched copy is written to.",
  "files": {
   "linga1.nif": {
    "variants": [
     {
      "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "out": "meshes/morten/lingas",
      "size": 137737,
      "source_sha256": "48631a9db63fdf327a2d0cd586bfa9f662d7d6cf1f3af337932083f19c08cadc",
-     "patched_sha256": "901d3afbf051556684bba56112a23465ab71109ca58b80275a930b355907efdc",
+     "patched_sha256": "5148a3077e044e81d96196dc288aeef56cad0120e588e7c04de94028b3955735",
      "patches": [
       {
        "offset": 6164,
@@ -23,17 +24,73 @@
       {
        "offset": 6285,
        "original": "a9e833be4e83fb3f2d7be1",
-       "patched": "a15016c202591c41dd69dd"
+       "patched": "82cb10c254111b41fceedb"
       },
       {
        "offset": 6301,
        "original": "2c0445bd7bc3014100f63fc0",
        "patched": "028e2dbfa9f9223e1e608abf"
+      },
+      {
+       "offset": 9553,
+       "original": "562d11",
+       "patched": "37a80b"
+      },
+      {
+       "offset": 9557,
+       "original": "8e3a1c",
+       "patched": "e0f21a"
+      },
+      {
+       "offset": 9561,
+       "original": "6b90dd",
+       "patched": "8a15dc"
+      },
+      {
+       "offset": 14243,
+       "original": "3e8004c262a01b",
+       "patched": "3ff6fdc1b4581a"
+      },
+      {
+       "offset": 14251,
+       "original": "b018de",
+       "patched": "cf9ddc"
+      },
+      {
+       "offset": 17655,
+       "original": "3ac60c",
+       "patched": "1b4107"
+      },
+      {
+       "offset": 17659,
+       "original": "bc671c",
+       "patched": "0e201b"
+      },
+      {
+       "offset": 17663,
+       "original": "7957dd",
+       "patched": "98dcdb"
+      },
+      {
+       "offset": 22285,
+       "original": "f29108",
+       "patched": "d30c03"
+      },
+      {
+       "offset": 22289,
+       "original": "c50f1c",
+       "patched": "17c81a"
+      },
+      {
+       "offset": 22293,
+       "original": "d380dd",
+       "patched": "f205dc"
       }
      ]
     },
     {
      "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "out": "meshes/morten/lingas",
      "size": 133739,
      "source_sha256": "e8d6eafaad03250ece3e8a6b1f5f97c92ecf1cf0510618da5e8ac91ceec37713",
      "patched_sha256": "cbfc24d52cc8f1cd70f3a7eb7aad3912a0be2d9f7b43425bce1433d2ea1e350f",
@@ -62,6 +119,7 @@
     },
     {
      "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "out": "meshes/morten/lingas",
      "size": 137782,
      "source_sha256": "0adf32e812c438cbf16d00591f529f2873e319993c76194c0ba37806ca0c48a1",
      "patched_sha256": "71d05d6d8fd2a437c80f518e179e0421b25df37ab4c61d327651b891bc807346",
@@ -87,6 +145,180 @@
        "patched": "028e2dbfa9f9223e1e608abf"
       }
      ]
+    },
+    {
+     "label": "SLO VE (human tongues)",
+     "out": "meshes/SLOVE/tongues",
+     "size": 137737,
+     "source_sha256": "b008d21a95acde8a79301debadf3a20f324e26c59f5bed85df3e8007095ebc78",
+     "patched_sha256": "d1319559e4b57ef3eae036eb495de8a1ec698a3c6f85bbcc66692f47e01fcd94",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 6301,
+       "original": "2c0445bd7bc3014100f63fc0",
+       "patched": "028e2dbfa9f9223e1e608abf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137737,
+     "source_sha256": "08566d5f080bdc7b55fe53330c555371869a03af3c0af316ef9ed859fffbc545",
+     "patched_sha256": "ea9a6365a8413a7a9bae4f23df0c26f5bf29ae772bcfadaaee4f03d97c0a2086",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833bed4e09e409361e0",
+       "patched": "a15016c202591c41dc69dd"
+      },
+      {
+       "offset": 6301,
+       "original": "2c0445bd7bc33141cdc21cc0",
+       "patched": "028e2dbfa9f9223e1e608abf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137737,
+     "source_sha256": "3c984fdc8983d688e01de37bd21455cdd19d2def9803567c7d5f7bd3376c2432",
+     "patched_sha256": "5d0ffc4d5b849b5740d8010a1cb5018ffd419a6d94144b1fee709b06d5d6478b",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833bed4e0de40c714",
+       "patched": "a15016c203591c41dd69"
+      },
+      {
+       "offset": 6301,
+       "original": "2c0445bd7bc35141cda44c",
+       "patched": "028e2dbfa9f9223e1e608a"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (UBE tongues)",
+     "out": "meshes/!UBE/SLOVE/tongues",
+     "size": 133682,
+     "source_sha256": "a12bb559977e8f055143fda1af4e676357838a25cacae94785a1edbad46ced31",
+     "patched_sha256": "8798425825ab94d3fd1f0eb776b85f50a15f4f81be3e3c35cd78c675b745fad7",
+     "patches": [
+      {
+       "offset": 20517,
+       "original": "62",
+       "patched": "63"
+      },
+      {
+       "offset": 20594,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 20630,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 20646,
+       "original": "60fa11bd8233e5408083edbf",
+       "patched": "2df4323f3a46a43d2befaabe"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137737,
+     "source_sha256": "57c0d1d563ea0c033143c84b19830989d54ce8358e8d627fa4b358f9dfb15889",
+     "patched_sha256": "6a3a33836d90b70b9d2f9f04ed9887808fca8d0128889fad994e62954ffbffb5",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be0d28044060aee6",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 6301,
+       "original": "2c0445bd155d0341332eb3c0",
+       "patched": "0a8e2dbfa9f9223e1d608abf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137737,
+     "source_sha256": "ea53275b6dc2f679d8e41fe0bf9cc957df505342083cc009674b9282dd608505",
+     "patched_sha256": "fab86005cd3a239174826187cde972d6ea710a35fe97e49136de675ffaef8416",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be0d286440c794e9",
+       "patched": "a15016c203591c41dd69dd"
+      },
+      {
+       "offset": 6301,
+       "original": "2c0445bd155d1b419a94e1c0",
+       "patched": "028e2dbfa9f9223e1e608abf"
+      }
+     ]
     }
    ]
   },
@@ -94,9 +326,10 @@
    "variants": [
     {
      "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "out": "meshes/morten/lingas",
      "size": 137737,
      "source_sha256": "121d66b6c3db25060ce52776b067292aeca552e93344d16da3a101949d197dc7",
-     "patched_sha256": "7828faffa5ec93e5ce3ac7bc153a0b11c3b867da211805b9c93a552f90977510",
+     "patched_sha256": "7bc856231993a9a6abcbd35037ada2c4417a5ab3043850758f47f892dece3848",
      "patches": [
       {
        "offset": 6164,
@@ -111,17 +344,78 @@
       {
        "offset": 6285,
        "original": "a9e833be4e83fb3f2d7be1",
-       "patched": "ed1317c295371c41192cdd"
+       "patched": "ed1310c2d2411b419e17dc"
       },
       {
        "offset": 6301,
        "original": "ee66aebddc080141a0b436c0",
        "patched": "f1b444bf021bcc3d7a1357bf"
+      },
+      {
+       "offset": 9553,
+       "original": "b44613",
+       "patched": "43090d"
+      },
+      {
+       "offset": 9557,
+       "original": "ea671c",
+       "patched": "32491b"
+      },
+      {
+       "offset": 9561,
+       "original": "adb1dd",
+       "patched": "c15fdc"
+      },
+      {
+       "offset": 14243,
+       "original": "3dcb0f",
+       "patched": "cc8d09"
+      },
+      {
+       "offset": 14247,
+       "original": "cb231d",
+       "patched": "13051c"
+      },
+      {
+       "offset": 14251,
+       "original": "e63cde",
+       "patched": "faeadc"
+      },
+      {
+       "offset": 18873,
+       "original": "d7940c",
+       "patched": "665706"
+      },
+      {
+       "offset": 18877,
+       "original": "01da1c",
+       "patched": "49bb1b"
+      },
+      {
+       "offset": 18881,
+       "original": "656bde",
+       "patched": "7919dd"
+      },
+      {
+       "offset": 23503,
+       "original": "21040a",
+       "patched": "b0c603"
+      },
+      {
+       "offset": 23507,
+       "original": "a7b51b",
+       "patched": "ef961a"
+      },
+      {
+       "offset": 23511,
+       "original": "d6dfdd",
+       "patched": "ea8ddc"
       }
      ]
     },
     {
      "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "out": "meshes/morten/lingas",
      "size": 133741,
      "source_sha256": "9b03e092a97b49dda8238efc8e9a0e64a7e0f958183d44dc26cb04d2ecbded3c",
      "patched_sha256": "0e0a7da8c32dd0f125e7762a7f791ffdccfc4245b32f1c0fac1d277db5b4ecdf",
@@ -150,6 +444,7 @@
     },
     {
      "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "out": "meshes/morten/lingas",
      "size": 137782,
      "source_sha256": "a219b6e9e329bf7a1630cf0fda50d1551b41e8370b0a8bbd20b1342741a2d576",
      "patched_sha256": "3f8846d91cd4ba492e59010a55e51e38cf61cbfe49da5d1bb3f6a4759eb14907",
@@ -175,6 +470,180 @@
        "patched": "f1b444bf021bcc3d7a1357bf"
       }
      ]
+    },
+    {
+     "label": "SLO VE (human tongues)",
+     "out": "meshes/SLOVE/tongues",
+     "size": 137737,
+     "source_sha256": "113a392f35c2d45cfe3f4cc016a48756bfbb9c3849741e6ebf17cc8f2239ae8f",
+     "patched_sha256": "83fd821d759dceefc8fdfe5278305e482a2d852e44778380f8f183db43e4b599",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "2318393cf6ca7abf26c1c93ecfad863f55a7babc18cab1bd6759b63d0480c93eaad279"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "ed1317c295371c41192cdd"
+      },
+      {
+       "offset": 6301,
+       "original": "ee66aebddc080141a0b436c0",
+       "patched": "f1b444bf021bcc3d7a1357bf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137737,
+     "source_sha256": "1114354a8545e9eaaf11e34e0fa407ed6672ce5c700ec12af7f2ac3627d43990",
+     "patched_sha256": "dd18e0295e70554d8e61d4648f8b969cd842a6efc61b750be9cf491f5b59908f",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "2318393cf6ca7abf26c1c93ecfad863f55a7babc18cab1bd6759b63d0480c93eaad279"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833bed4e09e409361e0",
+       "patched": "ed1317c295371c41182cdd"
+      },
+      {
+       "offset": 6301,
+       "original": "ee66aebddc0831416d8113c0",
+       "patched": "f1b444bf021bcc3d7a1357bf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137737,
+     "source_sha256": "45527d8b2447089f558bcbfa62b24d415ed5e8c01520b35ca9458f2772bd78d0",
+     "patched_sha256": "cadc5f91e2ad867b8ef75841439cb1e8617c074c8526fd3ef05a59ba5292bc98",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "2318393cf6ca7abf26c1c93ecfad863f55a7babc18cab1bd6759b63d0480c93eaad279"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833bed4e0de40c714",
+       "patched": "ee1317c295371c41192c"
+      },
+      {
+       "offset": 6301,
+       "original": "ee66aebddc0851414d9f27",
+       "patched": "f1b444bf021bcc3d7a1357"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (UBE tongues)",
+     "out": "meshes/!UBE/SLOVE/tongues",
+     "size": 133684,
+     "source_sha256": "9f6213c3db4f7cf57e45e66685a023d9f8cbf536c50215aa4851840a6fb4651d",
+     "patched_sha256": "0c391348b4571a49a1d8527011382935a879e31c149b7d00a0fb371127214e34",
+     "patches": [
+      {
+       "offset": 20519,
+       "original": "62",
+       "patched": "63"
+      },
+      {
+       "offset": 20596,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 20632,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 20648,
+       "original": "d6368fbd4c95dd40400edcbf",
+       "patched": "4f297c3fd79f0c3d5df797be"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137737,
+     "source_sha256": "771608cb5a81c8cf9bf2900e45dbe6c4e776ea7b3ea3667bd09a558549a2bb68",
+     "patched_sha256": "99493e96c19ad790c5bb590d6158884d68d5af0b4a0d48d88a650f2a775d363d",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "2318393cf6ca7abf26c1c93ecfad863f55a7babc18cab1bd6759b63d0480c93eaad279"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be0d28044060aee6",
+       "patched": "ed1317c295371c41192cdd"
+      },
+      {
+       "offset": 6301,
+       "original": "ee66aebd76a20241838daec0",
+       "patched": "f8b444bf021bcc3d771357bf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137737,
+     "source_sha256": "fc0ef9802fd9e7d4e01df3ef9d900a96b2de461bda15d7716894313c3afbfa62",
+     "patched_sha256": "6e5251bb4164cfaa6ab1cc80071e8c218322d8d94d785ee015bc4b443b703806",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "2318393cf6ca7abf26c1c93ecfad863f55a7babc18cab1bd6759b63d0480c93eaad279"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be0d286440c794e9",
+       "patched": "ed1317c295371c41192cdd"
+      },
+      {
+       "offset": 6301,
+       "original": "ee66aebd76a21a41eaf3dcc0",
+       "patched": "f1b444bf021bcc3d7a1357bf"
+      }
+     ]
     }
    ]
   },
@@ -182,9 +651,10 @@
    "variants": [
     {
      "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "out": "meshes/morten/lingas",
      "size": 137737,
      "source_sha256": "7a42b034e287dccd8341b9bc8a48a6ca438bfe90071d41da88cc374e45dccf44",
-     "patched_sha256": "c7151c5449d448a00952cc59ae46dda367c79579b542eba225bc54f4aad60095",
+     "patched_sha256": "d020dbb0b4b900c29f4a03dcc895c5062abf052f309521a5cfd096e7da6f31e7",
      "patches": [
       {
        "offset": 6164,
@@ -199,17 +669,78 @@
       {
        "offset": 6285,
        "original": "a9e833be4e83fb3f2d7be1",
-       "patched": "8f2716c2fd04e040c0c6dd"
+       "patched": "c25a10c2f32dd4403bdbdb"
       },
       {
        "offset": 6301,
        "original": "25107dbe9a970941c0c73ec0",
        "patched": "396b8dbfa2b17a3e326c57bf"
+      },
+      {
+       "offset": 9553,
+       "original": "8e1413",
+       "patched": "09290d"
+      },
+      {
+       "offset": 9557,
+       "original": "3a4ae0",
+       "patched": "e891d9"
+      },
+      {
+       "offset": 9561,
+       "original": "932cde",
+       "patched": "7427dc"
+      },
+      {
+       "offset": 14243,
+       "original": "3e7d10",
+       "patched": "b9910a"
+      },
+      {
+       "offset": 14247,
+       "original": "bf04e1",
+       "patched": "6d4cda"
+      },
+      {
+       "offset": 14251,
+       "original": "e11dde",
+       "patched": "c218dc"
+      },
+      {
+       "offset": 18873,
+       "original": "3eed0d",
+       "patched": "b90108"
+      },
+      {
+       "offset": 18877,
+       "original": "98bce0",
+       "patched": "4604da"
+      },
+      {
+       "offset": 18881,
+       "original": "df79de",
+       "patched": "c074dc"
+      },
+      {
+       "offset": 23503,
+       "original": "ea480d",
+       "patched": "655d07"
+      },
+      {
+       "offset": 23507,
+       "original": "dd2de1",
+       "patched": "8b75da"
+      },
+      {
+       "offset": 23511,
+       "original": "e5d2df",
+       "patched": "c6cddd"
       }
      ]
     },
     {
      "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "out": "meshes/morten/lingas",
      "size": 133741,
      "source_sha256": "cf91eef06533534e28f593320f5975f8a68e441c6b673b3c768ec91099990b83",
      "patched_sha256": "62023b82e169532fc8e8217dd321cb7625dd8bed165bbdd11c6cfcf6a5e74df9",
@@ -238,6 +769,7 @@
     },
     {
      "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "out": "meshes/morten/lingas",
      "size": 137782,
      "source_sha256": "6cb97f57f6fd04a45fb42b46222259fc434da46284ef17c95bfe7d014c2e7334",
      "patched_sha256": "04b805a7025d85b868419ce90d168cb0f9cea3960b65d99da2fd6861a84dbf8b",
@@ -263,6 +795,200 @@
        "patched": "396b8dbfa2b17a3e326c57bf"
       }
      ]
+    },
+    {
+     "label": "SLO VE (human tongues)",
+     "out": "meshes/SLOVE/tongues",
+     "size": 137737,
+     "source_sha256": "f246fabe5681e0e4d7064e268af7bd79a8c0da835be6a166068b4a43366452c5",
+     "patched_sha256": "856e1afec10f5f15d1d4738248f9eba2374e4c4f46dcd3012b73184ae81a26a2",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "bbcd0c3e095d78bf3993c93eb1ff853f8a6af73d321d8bbd16428e3c285ccc3ef33d7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "8f2716c2fd04e040c0c6dd"
+      },
+      {
+       "offset": 6301,
+       "original": "25107dbe9a970941c0c73ec0",
+       "patched": "396b8dbfa2b17a3e326c57bf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137737,
+     "source_sha256": "6853dd5962d4ac786b9533284f10cb5f5aec41c4c40d90b82e8b076b15120405",
+     "patched_sha256": "b9ce4b46432c949f259182c6ce7bec6540383ceed8b5a64c93f28f47057b3031",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "bbcd0c3e095d78bf3993c93eb1ff853f8a6af73d321d8bbd16428e3c285ccc3ef33d7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833bed4e09e",
+       "patched": "8f2716c2fd04e0"
+      },
+      {
+       "offset": 6293,
+       "original": "9361e0",
+       "patched": "c0c6dd"
+      },
+      {
+       "offset": 6301,
+       "original": "25107dbe9a9739418d941bc0",
+       "patched": "396b8dbfa2b17a3e326c57bf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137737,
+     "source_sha256": "1cfbff81183859dbbb7a5a5d07ce70466c3d1982eebc9e0f6738d0ed19160934",
+     "patched_sha256": "cb5046a07b00446d4ea21f1fe6e4ce45b3881ad0b4a6f50ae2d958782ea5bf28",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "bbcd0c3e095d78bf3993c93eb1ff853f8a6af73d321d8bbd16428e3c285ccc3ef33d7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833bed4e0de",
+       "patched": "8f2716c2fe04e0"
+      },
+      {
+       "offset": 6293,
+       "original": "c714",
+       "patched": "c1c6"
+      },
+      {
+       "offset": 6301,
+       "original": "25107dbe9a975941cdeb47",
+       "patched": "396b8dbfa2b17a3e326c57"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (UBE tongues)",
+     "out": "meshes/!UBE/SLOVE/tongues",
+     "size": 133684,
+     "source_sha256": "97c8bcfedbd17b138e6b96ce01afc06ba283e69129cd82339245de1bf29c6c9d",
+     "patched_sha256": "76ec07b8969d23544d3a0108c2d0f593fe2f2bf234a28200e8c26d0cbb92bd7e",
+     "patches": [
+      {
+       "offset": 20519,
+       "original": "62",
+       "patched": "63"
+      },
+      {
+       "offset": 20596,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 20632,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 20648,
+       "original": "425b6fbec4c3f4408016c8bf",
+       "patched": "e3d6a93e447422befb64003e"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137737,
+     "source_sha256": "51220698a22377bfee2fe4c52ce952b6214c2b9f59cd8a701ffe076e9a251648",
+     "patched_sha256": "5bcfcc0225d90afbf01d452dd9c01d1d3ff80fbeef95e2583796e99639cce332",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "bbcd0c3e095d78bf3993c93eb1ff853f8a6af73d321d8bbd16428e3c285ccc3ef33d7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be0d2804",
+       "patched": "8f2716c2fd04e0"
+      },
+      {
+       "offset": 6293,
+       "original": "60aee6",
+       "patched": "c0c6dd"
+      },
+      {
+       "offset": 6301,
+       "original": "25107dbe34310b411397b2c0",
+       "patched": "396b8dbfa2b17a3e326c57bf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137737,
+     "source_sha256": "1fbc2d062a44c6011f428b21a04253c17866d2f8a20591d397a91ccc9f8189d0",
+     "patched_sha256": "57103a7f549e61916d856673cfc4d1076eb3523530291e0275428a1fa54416e5",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "bbcd0c3e095d78bf3993c93eb1ff853f8a6af73d321d8bbd16428e3c285ccc3ef33d7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be0d2864",
+       "patched": "8f2716c2fe04e0"
+      },
+      {
+       "offset": 6293,
+       "original": "c794e9",
+       "patched": "c1c6dd"
+      },
+      {
+       "offset": 6301,
+       "original": "25107dbe343123417afde0c0",
+       "patched": "396b8dbfa2b17a3e326c57bf"
+      }
+     ]
     }
    ]
   },
@@ -270,9 +996,10 @@
    "variants": [
     {
      "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "out": "meshes/morten/lingas",
      "size": 137737,
      "source_sha256": "d4b63caed3d1cb6ddd6805363a7e959019aeada2907674d3ad09322d23630c9a",
-     "patched_sha256": "ed65cfea4e2e5a8231d079ac19c872a655582467bcdd7a58df86db38115f9126",
+     "patched_sha256": "215292bba8f8d8ad51d4a16d4e64c5dd418a9badef5af2588909b394a3a74a5b",
      "patches": [
       {
        "offset": 6164,
@@ -287,7 +1014,7 @@
       {
        "offset": 6285,
        "original": "a9e833be4e83fb3f2d7be1",
-       "patched": "55b116c297ce8640ccbadd"
+       "patched": "88e411c2269184401e73dc"
       },
       {
        "offset": 6301,
@@ -298,11 +1025,72 @@
        "offset": 6308,
        "original": "41e01550c0",
        "patched": "3e4e8e8abf"
+      },
+      {
+       "offset": 9553,
+       "original": "8c9912",
+       "patched": "6d140d"
+      },
+      {
+       "offset": 9557,
+       "original": "00e685",
+       "patched": "664c84"
+      },
+      {
+       "offset": 9561,
+       "original": "6bbbdd",
+       "patched": "8a40dc"
+      },
+      {
+       "offset": 14243,
+       "original": "ad430f",
+       "patched": "8ebe09"
+      },
+      {
+       "offset": 14247,
+       "original": "c5af85",
+       "patched": "2b1684"
+      },
+      {
+       "offset": 14251,
+       "original": "4217dd",
+       "patched": "619cdb"
+      },
+      {
+       "offset": 18873,
+       "original": "66220b",
+       "patched": "479d05"
+      },
+      {
+       "offset": 18877,
+       "original": "526e83",
+       "patched": "b8d481"
+      },
+      {
+       "offset": 18881,
+       "original": "593bdc",
+       "patched": "78c0da"
+      },
+      {
+       "offset": 23503,
+       "original": "e35406",
+       "patched": "c4cf00"
+      },
+      {
+       "offset": 23507,
+       "original": "d15983",
+       "patched": "37c081"
+      },
+      {
+       "offset": 23511,
+       "original": "a220dc",
+       "patched": "c1a5da"
       }
      ]
     },
     {
      "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "out": "meshes/morten/lingas",
      "size": 133741,
      "source_sha256": "d0965837353e7c53d913334430b7bcf4ddd8aa3b705036408bcd90106fb7568f",
      "patched_sha256": "81879fc168cbda5988534f8da9c447a28d3581b60aa1be93538148d786b6e97a",
@@ -331,6 +1119,7 @@
     },
     {
      "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "out": "meshes/morten/lingas",
      "size": 137782,
      "source_sha256": "7ee8a296f2d1dbec0e56da7ea19ddb9f15e7491f3e3df597a8e65ed939f7d14b",
      "patched_sha256": "ca26e351c37946b096d03097d061a900c46586c9fb6d5ea8fa7311919488eaff",
@@ -361,6 +1150,205 @@
        "patched": "3e4e8e8abf"
       }
      ]
+    },
+    {
+     "label": "SLO VE (human tongues)",
+     "out": "meshes/SLOVE/tongues",
+     "size": 137737,
+     "source_sha256": "e52b54f561d20a8193c9bc3553e3cdfbb773a32de54e225220fe53bc0d3435c9",
+     "patched_sha256": "655d46b807a8376418e8af347d4c147689e1677d88e3a22ae35373b0a0fe78ae",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "104b893ca4857abf3effca3ecf14873f9fd1363b5e841abddae60a3d612ccb3e575f7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "55b116c297ce8640ccbadd"
+      },
+      {
+       "offset": 6301,
+       "original": "61cfa6bd25e2",
+       "patched": "8a4a79bfbcb7"
+      },
+      {
+       "offset": 6308,
+       "original": "41e01550c0",
+       "patched": "3e4e8e8abf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137737,
+     "source_sha256": "4284cf996de1021b8218c5cfea4debea1f2b3c78f30faf9e03e641650035a8b2",
+     "patched_sha256": "31172486bf569f115c96e52e44d5d6f38514f91df61ffa4ae577e5955f382e7c",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "104b893ca4857abf3effca3ecf14873f9fd1363b5e841abddae60a3d612ccb3e575f7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833bed4e09e",
+       "patched": "54b116c297ce86"
+      },
+      {
+       "offset": 6293,
+       "original": "9361e0",
+       "patched": "ccbadd"
+      },
+      {
+       "offset": 6301,
+       "original": "61cfa6bd25e23741ade22cc0",
+       "patched": "8a4a79bfbcb7073e4e8e8abf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137737,
+     "source_sha256": "0d485d58e1effb39e9980b80a42e489497aa36bc8f2e55e0f05457ad7d34b06f",
+     "patched_sha256": "b07c8754748cb58b4a236dec81b55b0cea557cde1258cc496fa762d89be0e4ab",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "104b893ca4857abf3effca3ecf14873f9fd1363b5e841abddae60a3d612ccb3e575f7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833bed4e0de",
+       "patched": "55b116c297ce86"
+      },
+      {
+       "offset": 6293,
+       "original": "c714",
+       "patched": "cdba"
+      },
+      {
+       "offset": 6301,
+       "original": "61cfa6bd25e25741269286",
+       "patched": "8a4a79bfbcb7073e4d8e8a"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (UBE tongues)",
+     "out": "meshes/!UBE/SLOVE/tongues",
+     "size": 133684,
+     "source_sha256": "08876aaa597fb6d8c54e395042ba462b9dd3cfbc69b0244690941755f1c58bea",
+     "patched_sha256": "6a920db7764d832b0b11ee969431b0cfc739f1fcedd3e3656e19a9174a581cf9",
+     "patches": [
+      {
+       "offset": 20519,
+       "original": "62",
+       "patched": "63"
+      },
+      {
+       "offset": 20596,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 20632,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 20648,
+       "original": "095a8bbd665cf140608907c0",
+       "patched": "f671643e3e84863d9845e3be"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137737,
+     "source_sha256": "da332b32abdda8834fbd21fbc6055721808b4bc7b26390457599aca6318db940",
+     "patched_sha256": "7786f0b4e1253fd08cba99b76e1280ae42aaeccbd138195b11cea5e360e69679",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "104b893ca4857abf3effca3ecf14873f9fd1363b5e841abddae60a3d612ccb3e575f7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be0d2804",
+       "patched": "54b116c297ce86"
+      },
+      {
+       "offset": 6293,
+       "original": "60aee6",
+       "patched": "ccbadd"
+      },
+      {
+       "offset": 6301,
+       "original": "61cfa6bdbf7b0941233ebbc0",
+       "patched": "8a4a79bfbcb7073e4e8e8abf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137737,
+     "source_sha256": "b03a24e42f8bdd5ef603dc824bea0b70e3b26995a83ead6aa3d3e4300d00acbb",
+     "patched_sha256": "1778ade8f943333bfc720d1920188dbb2534d56088dad729b4151764d6b424c5",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "104b893ca4857abf3effca3ecf14873f9fd1363b5e841abddae60a3d612ccb3e575f7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be0d2864",
+       "patched": "55b116c297ce86"
+      },
+      {
+       "offset": 6293,
+       "original": "c794e9",
+       "patched": "cdbadd"
+      },
+      {
+       "offset": 6301,
+       "original": "61cfa6bdbf7b21418aa4e9c0",
+       "patched": "8a4a79bfbcb7073e4e8e8abf"
+      }
+     ]
     }
    ]
   },
@@ -368,9 +1356,10 @@
    "variants": [
     {
      "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "out": "meshes/morten/lingas",
      "size": 137737,
      "source_sha256": "b8fca00819faaf5d2cf364968788b956fbb4297373b7e7127ae7dea9a3eceed6",
-     "patched_sha256": "c6651e77c27ab9385366abc02ef356de4c92374bd97f485773b3e3fc784a2031",
+     "patched_sha256": "cbced68c3212d6c0913cabf66fed9299696edb207571f3b837d76951591dcf80",
      "patches": [
       {
        "offset": 6164,
@@ -390,17 +1379,78 @@
       {
        "offset": 6285,
        "original": "a9e833be4e83fb3f2d7be1",
-       "patched": "8e4f17c2cb08214039badd"
+       "patched": "5b1c13c2316f17409f20dc"
       },
       {
        "offset": 6301,
        "original": "e0b2a33c35450741a0a650c0",
        "patched": "286572bf9fc9483ed5308dbf"
+      },
+      {
+       "offset": 9553,
+       "original": "c63713",
+       "patched": "414c0e"
+      },
+      {
+       "offset": 9557,
+       "original": "9c371f",
+       "patched": "0d7519"
+      },
+      {
+       "offset": 9561,
+       "original": "d5badd",
+       "patched": "08eedb"
+      },
+      {
+       "offset": 14243,
+       "original": "c85c0f",
+       "patched": "43710a"
+      },
+      {
+       "offset": 14247,
+       "original": "11881e",
+       "patched": "82c518"
+      },
+      {
+       "offset": 14251,
+       "original": "f9f7dc",
+       "patched": "2c2bdb"
+      },
+      {
+       "offset": 18873,
+       "original": "4df80a",
+       "patched": "c80c06"
+      },
+      {
+       "offset": 18877,
+       "original": "b3601a",
+       "patched": "249e14"
+      },
+      {
+       "offset": 18881,
+       "original": "5f87dc",
+       "patched": "92bada"
+      },
+      {
+       "offset": 23503,
+       "original": "658807",
+       "patched": "e09c02"
+      },
+      {
+       "offset": 23507,
+       "original": "27dc1b",
+       "patched": "981916"
+      },
+      {
+       "offset": 23511,
+       "original": "f5b0dd",
+       "patched": "28e4db"
       }
      ]
     },
     {
      "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "out": "meshes/morten/lingas",
      "size": 137710,
      "source_sha256": "cd1677163bed2497573057a0b924cbe360e11daf2ad1ecb2a92dc57afa2becf6",
      "patched_sha256": "751f469580937f375a2c0a80890b10b47670da94351f7c53490ce6621159fd92",
@@ -429,6 +1479,7 @@
     },
     {
      "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "out": "meshes/morten/lingas",
      "size": 137782,
      "source_sha256": "08cef6abf72562b4faceef3c7d774c77611d99ea11ec605a4414cc3314a663bc",
      "patched_sha256": "2804d0ea4a46ceb6ae5c2cf1a64dc97b684dd606fd78d0d0521f7ae4bb7d1e17",
@@ -459,6 +1510,225 @@
        "patched": "286572bf9fc9483ed5308dbf"
       }
      ]
+    },
+    {
+     "label": "SLO VE (human tongues)",
+     "out": "meshes/SLOVE/tongues",
+     "size": 137737,
+     "source_sha256": "fe4a14d480c983e200259e264fa29313eb02bf3c5e69259fda9d32bf85a0b510",
+     "patched_sha256": "327b38f331b455019c67bb189f9772140b7a58791b58ec3dbb4b7b56b7f9c7c6",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc",
+       "patched": "455c04bdf3487abf"
+      },
+      {
+       "offset": 6258,
+       "original": "8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "accb3e5d08873f4bc72fbd0e00a2bc5d350d3db228cb3ecc5e7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "8e4f17c2cb08214039badd"
+      },
+      {
+       "offset": 6301,
+       "original": "e0b2a33c35450741a0a650c0",
+       "patched": "286572bf9fc9483ed5308dbf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137737,
+     "source_sha256": "833f6c6e86ac25bea192e06237fdd43293cade6afef6037cb89574611dfe39c1",
+     "patched_sha256": "2c59f861d905c45033d0f1d812ff44a0e480272e859f13d80b080ee34640bf2d",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc",
+       "patched": "455c04bdf3487abf"
+      },
+      {
+       "offset": 6258,
+       "original": "8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "accb3e5d08873f4bc72fbd0e00a2bc5d350d3db228cb3ecc5e7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833bed4e09e",
+       "patched": "8e4f17c2cb0821"
+      },
+      {
+       "offset": 6293,
+       "original": "9361e0",
+       "patched": "39badd"
+      },
+      {
+       "offset": 6301,
+       "original": "e0b2a33c354537416d732dc0",
+       "patched": "286572bf9fc9483ed5308dbf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137737,
+     "source_sha256": "e306e3cc943223399b4242c9cd9df97efc91177680313ef5095f6f23a3d1b657",
+     "patched_sha256": "553976eea973e5a84a533a8324d65cd535eaf745e5dedd08bb9496b027cfe8ce",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc",
+       "patched": "455c04bdf3487abf"
+      },
+      {
+       "offset": 6258,
+       "original": "8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "accb3e5d08873f4bc72fbd0e00a2bc5d350d3db228cb3ecc5e7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833bed4e0de",
+       "patched": "8e4f17c2cb0821"
+      },
+      {
+       "offset": 6293,
+       "original": "c714",
+       "patched": "3aba"
+      },
+      {
+       "offset": 6301,
+       "original": "e0b2a33c35455741a6b387",
+       "patched": "286572bf9fc9483ed5308d"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (UBE tongues)",
+     "out": "meshes/!UBE/SLOVE/tongues",
+     "size": 133684,
+     "source_sha256": "e248d52e3752a255e4dea512a5d755f507c72201ee76bd5a010027c2624bb15c",
+     "patched_sha256": "30026199ecb302d6b3b009f96e6e2ce9cb1a64186282712ec4ca843b7364121e",
+     "patches": [
+      {
+       "offset": 20519,
+       "original": "62",
+       "patched": "63"
+      },
+      {
+       "offset": 20596,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 20632,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 20648,
+       "original": "583382bd5822f640000002c0",
+       "patched": "7ad9e23de53f7b3dfbe299be"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137737,
+     "source_sha256": "933abd3cbce99b504b33b19ab44a42270a0462af1c9dde4dbed52e9f8a4ead66",
+     "patched_sha256": "3e038bf0546a9e1d267d5579f2e51ee1c81e565271f3000873a5a1cfba83d6f8",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc",
+       "patched": "455c04bdf3487abf"
+      },
+      {
+       "offset": 6258,
+       "original": "8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "accb3e5d08873f4bc72fbd0e00a2bc5d350d3db228cb3ecc5e7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be0d2804",
+       "patched": "8e4f17c2cb0821"
+      },
+      {
+       "offset": 6293,
+       "original": "60aee6",
+       "patched": "39badd"
+      },
+      {
+       "offset": 6301,
+       "original": "e0b2a33ccfde08418386bbc0",
+       "patched": "286572bf9fc9483ed5308dbf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137737,
+     "source_sha256": "b92cd111af24fc39acb941d73f692917a2d2c5edf9f80949b576505feccf0b44",
+     "patched_sha256": "64e42a3e6a6a9ca812a88ab0f197c5e3423c7c809cba643be5517f379a7097e9",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc",
+       "patched": "455c04bdf3487abf"
+      },
+      {
+       "offset": 6258,
+       "original": "8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "accb3e5d08873f4bc72fbd0e00a2bc5d350d3db228cb3ecc5e7a"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be0d2864",
+       "patched": "8e4f17c2cc0821"
+      },
+      {
+       "offset": 6293,
+       "original": "c794e9",
+       "patched": "3abadd"
+      },
+      {
+       "offset": 6301,
+       "original": "e0b2a33ccfde2041eaece9c0",
+       "patched": "286572bf9fc9483ed5308dbf"
+      }
+     ]
     }
    ]
   },
@@ -466,14 +1736,75 @@
    "variants": [
     {
      "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "out": "meshes/morten/lingas",
      "size": 137703,
      "source_sha256": "8c1e41ae415184fccc5aa16ad7c9882832a9085f994d3ccca9dfdb499785edf7",
-     "patched_sha256": "c1cb45e2ed0c09f73b8c336c762cab51ea47530ad9597c9920b7ecb8f5534594",
+     "patched_sha256": "d2e200db5bd1675d05956d4d913f2576f1fb498b56ca14f1339c9df4439d0a43",
      "patches": [
       {
        "offset": 6180,
        "original": "79",
        "patched": "7a"
+      },
+      {
+       "offset": 6285,
+       "original": "3c9913",
+       "patched": "6fcc0d"
+      },
+      {
+       "offset": 6289,
+       "original": "c1e741",
+       "patched": "65583f"
+      },
+      {
+       "offset": 6293,
+       "original": "a1eddd",
+       "patched": "9716dc"
+      },
+      {
+       "offset": 10975,
+       "original": "d91411",
+       "patched": "0c480b"
+      },
+      {
+       "offset": 10979,
+       "original": "296241",
+       "patched": "cdd23e"
+      },
+      {
+       "offset": 10983,
+       "original": "43f4dd",
+       "patched": "391ddc"
+      },
+      {
+       "offset": 15605,
+       "original": "11690e",
+       "patched": "449c08"
+      },
+      {
+       "offset": 15609,
+       "original": "44dd3c",
+       "patched": "e84d3a"
+      },
+      {
+       "offset": 15613,
+       "original": "9bf9dd",
+       "patched": "9122dc"
+      },
+      {
+       "offset": 20235,
+       "original": "54910b",
+       "patched": "87c405"
+      },
+      {
+       "offset": 20239,
+       "original": "ec353d",
+       "patched": "90a63a"
+      },
+      {
+       "offset": 20243,
+       "original": "3e55de",
+       "patched": "347edc"
       },
       {
        "offset": 23611,
@@ -483,7 +1814,7 @@
       {
        "offset": 23647,
        "original": "a9e833be4e83fb3f2d7be1",
-       "patched": "130c17c240da4340b9bedd"
+       "patched": "98f711c288bb3e40e21adc"
       },
       {
        "offset": 23663,
@@ -494,6 +1825,7 @@
     },
     {
      "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "out": "meshes/morten/lingas",
      "size": 137676,
      "source_sha256": "1c1a1f6d14cd2bd2c9f8f1c949ecc239d33bcfc244829e0a0b76b4e5d0a9a052",
      "patched_sha256": "d8f1684f2e1b49c269c68c4a84e747a378e685eec95a997fc2fb6717b628fcd6",
@@ -522,6 +1854,7 @@
     },
     {
      "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "out": "meshes/morten/lingas",
      "size": 137748,
      "source_sha256": "9f133373b992be55ffdd1835d94822c6dd4aa0d21172468fe884409ea80253cb",
      "patched_sha256": "77c18606d9cada57d0c59fc18f5ad9351fcbec4efd867e75181150ff34601ace",
@@ -547,16 +1880,13 @@
        "patched": "f90c3bbf15cfc73dfcd86abf"
       }
      ]
-    }
-   ]
-  },
-  "linga7.nif": {
-   "variants": [
+    },
     {
-     "label": "Halo's HDT Tongues (original, Nexus 57374)",
-     "size": 137737,
-     "source_sha256": "da0a9dde766c733996e01f923a59e59a252e8ce12ecf662930be42ebd7e57416",
-     "patched_sha256": "00471c638e30d6aa386f1904d388ab9b6da9956e817272232941fa27c8b35fac",
+     "label": "SLO VE (human tongues)",
+     "out": "meshes/SLOVE/tongues",
+     "size": 137703,
+     "source_sha256": "7cedd8e016782af40b4f924d0e1484a4148e538b193c9ecf27ff635879980c56",
+     "patched_sha256": "78c2aadd9a9e0de5ee03cd0eb246c0c32e858a7f209f6b42402c91a178726f3d",
      "patches": [
       {
        "offset": 6180,
@@ -566,12 +1896,270 @@
       {
        "offset": 23611,
        "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "0395463c4b757abff365cb3e671f873f1e4d033b496ddfbce4d2c83c827dcb3e44617a"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "130c17c240da4340b9bedd"
+      },
+      {
+       "offset": 23663,
+       "original": "9e17bebd05620541003741c0",
+       "patched": "f90c3bbf15cfc73dfcd86abf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137703,
+     "source_sha256": "f0fdb0e708f9f896c310524abccd6ce23c2cdc91c7b2f299bb78fe0ebe7fc669",
+     "patched_sha256": "ed494e4065bcaa6b4a509f329dccc237cb6905c540068b6fc535cff8892d1f34",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "0395463c4b757abff365cb3e671f873f1e4d033b496ddfbce4d2c83c827dcb3e44617a"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833bed4e09e",
+       "patched": "130c17c240da43"
+      },
+      {
+       "offset": 23655,
+       "original": "9361e0",
+       "patched": "b9bedd"
+      },
+      {
+       "offset": 23663,
+       "original": "9e17bebd05623541cd031ec0",
+       "patched": "f90c3bbf15cfc73dfcd86abf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137703,
+     "source_sha256": "533a8c4ae80504263f7dc5026c58cf892be3c351d0076117b9c4ceb82abbf56b",
+     "patched_sha256": "9e670f328591d8bd304878dcb4d83530ea3b8d8f2d224cfa11317f02a62778e5",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "0395463c4b757abff365cb3e671f873f1e4d033b496ddfbce4d2c83c827dcb3e44617a"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833bed4e0de",
+       "patched": "130c17c240da43"
+      },
+      {
+       "offset": 23655,
+       "original": "c714",
+       "patched": "babe"
+      },
+      {
+       "offset": 23663,
+       "original": "9e17bebd05625541cda851",
+       "patched": "f90c3bbf15cfc73dfcd86a"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (UBE tongues)",
+     "out": "meshes/!UBE/SLOVE/tongues",
+     "size": 133650,
+     "source_sha256": "af42d6b67c598e41d162498c4c9bde32043e96a5d91cc1d8ba8f5fa278ae4838",
+     "patched_sha256": "fe80b90744a82f3284828249bda974b6f9f889aeec4c7f0396a8dac3f171a852",
+     "patches": [
+      {
+       "offset": 20535,
+       "original": "62",
+       "patched": "63"
+      },
+      {
+       "offset": 37958,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 37994,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 38010,
+       "original": "9667a1bd5c58ec408015d9bf",
+       "patched": "85a00a3f9447983c41d9c0bd"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137703,
+     "source_sha256": "55c989bb7202fcfe209f99d04474b2aa5f9004602e4d82f1bdf952c235eae75a",
+     "patched_sha256": "a0fbd1c8988e779f7a32e30c351664ba1ef537a2ba5da4f107fc88966a714038",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "0395463c4b757abff365cb3e671f873f1e4d033b496ddfbce4d2c83c827dcb3e44617a"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833be0d2804",
+       "patched": "130c17c240da43"
+      },
+      {
+       "offset": 23655,
+       "original": "60aee6",
+       "patched": "b9bedd"
+      },
+      {
+       "offset": 23663,
+       "original": "9e17bebd9ffb0641b3ceb3c0",
+       "patched": "f90c3bbf15cfc73dfcd86abf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137703,
+     "source_sha256": "3269a078fac1e9b9760e4ea520682615b660ced065c86a68d5478ddebcff067a",
+     "patched_sha256": "f68ab3df1d7db8cd1cdf08b1d73712f6d4c53568ffb9887aed819ca947b928c3",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "0395463c4b757abff365cb3e671f873f1e4d033b496ddfbce4d2c83c827dcb3e44617a"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833be0d2864",
+       "patched": "130c17c240da43"
+      },
+      {
+       "offset": 23655,
+       "original": "c794e9",
+       "patched": "babedd"
+      },
+      {
+       "offset": 23663,
+       "original": "9e17bebd9ffb1e411a35e2c0",
+       "patched": "f90c3bbf15cfc73dfcd86abf"
+      }
+     ]
+    }
+   ]
+  },
+  "linga7.nif": {
+   "variants": [
+    {
+     "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "out": "meshes/morten/lingas",
+     "size": 137737,
+     "source_sha256": "da0a9dde766c733996e01f923a59e59a252e8ce12ecf662930be42ebd7e57416",
+     "patched_sha256": "d01975d63fe7e42124e2f66181e9472997222fa82e55339797105c9ddb2bb5b1",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6285,
+       "original": "783913",
+       "patched": "1caa0c"
+      },
+      {
+       "offset": 6289,
+       "original": "a03842",
+       "patched": "44a93f"
+      },
+      {
+       "offset": 6293,
+       "original": "4c73de",
+       "patched": "19c0dc"
+      },
+      {
+       "offset": 10975,
+       "original": "f9c610",
+       "patched": "9d370a"
+      },
+      {
+       "offset": 10979,
+       "original": "58be41",
+       "patched": "fc2e3f"
+      },
+      {
+       "offset": 10983,
+       "original": "f185de",
+       "patched": "bed2dc"
+      },
+      {
+       "offset": 15605,
+       "original": "60400e",
+       "patched": "04b107"
+      },
+      {
+       "offset": 15609,
+       "original": "642e3d",
+       "patched": "089f3a"
+      },
+      {
+       "offset": 15613,
+       "original": "6574de",
+       "patched": "32c1dc"
+      },
+      {
+       "offset": 20235,
+       "original": "ba4f0c",
+       "patched": "5ec005"
+      },
+      {
+       "offset": 20239,
+       "original": "79d83c",
+       "patched": "1d493a"
+      },
+      {
+       "offset": 20243,
+       "original": "f3acdd",
+       "patched": "c0f9db"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
        "patched": "0897463c4c757abfe465cb3e681f873fd055033b4e6ddfbc89d2c83c757dcb3e49617a"
       },
       {
        "offset": 23647,
        "original": "a9e833be4e83fb3f2d7be1",
-       "patched": "c0e715c272ea4340d71cde"
+       "patched": "ac3911c2e3273e40ae40dc"
       },
       {
        "offset": 23663,
@@ -582,6 +2170,7 @@
     },
     {
      "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "out": "meshes/morten/lingas",
      "size": 133741,
      "source_sha256": "b9437539b56727733a7c5ebceceb55388d173f9fd5fa12429354b703fce59f7d",
      "patched_sha256": "e7488e08b9497a578f6eb202429542b17b8e3ae634002cfb3c5392e50cf6e63b",
@@ -610,6 +2199,7 @@
     },
     {
      "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "out": "meshes/morten/lingas",
      "size": 137782,
      "source_sha256": "daf316fd75dbcc0ef31df20dce4f0a42b1848af71a61536693d52b1453d4dccd",
      "patched_sha256": "ee86d3fd0846ba1b7c448007e98e33269a29aae2ed5e012ca551130e84c9652e",
@@ -635,16 +2225,13 @@
        "patched": "541f59bf5939c33db5aa3fbf"
       }
      ]
-    }
-   ]
-  },
-  "linga8.nif": {
-   "variants": [
+    },
     {
-     "label": "Halo's HDT Tongues (original, Nexus 57374)",
-     "size": 137703,
-     "source_sha256": "1718f5809fc961ee40e4787e73feb1aa2ca5f0835965b479be6bff9a226a4f7f",
-     "patched_sha256": "8eb733f3aceee7bea3bad0155378721f56fd65be1fdc03d69c20da77ec4f060c",
+     "label": "SLO VE (human tongues)",
+     "out": "meshes/SLOVE/tongues",
+     "size": 137737,
+     "source_sha256": "6674d2849bff3fcd67616b8117ed284c2a5eff1ebfba67cccb5b053c9c4cc039",
+     "patched_sha256": "efbc82d39612844e8e68dcf9ebaff7907de2edf5ff94eb883d327c989666f87a",
      "patches": [
       {
        "offset": 6180,
@@ -654,12 +2241,275 @@
       {
        "offset": 23611,
        "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "0897463c4c757abfe465cb3e681f873fd055033b4e6ddfbc89d2c83c757dcb3e49617a"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "c0e715c272ea4340d71cde"
+      },
+      {
+       "offset": 23663,
+       "original": "b033c9bd360a0d41408536c0",
+       "patched": "541f59bf5939c33db5aa3fbf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137737,
+     "source_sha256": "081b4cb9f5093ef233ace56d4b008b50bad73f86c17d1736ebe745a407b04ea7",
+     "patched_sha256": "507d1f1e55c97502d5295c392790c9eb1c69a514e54f2d6010feb0b783ccd908",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "0897463c4c757abfe465cb3e681f873fd055033b4e6ddfbc89d2c83c757dcb3e49617a"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833bed4e09e",
+       "patched": "c0e715c272ea43"
+      },
+      {
+       "offset": 23655,
+       "original": "9361e0",
+       "patched": "d71cde"
+      },
+      {
+       "offset": 23663,
+       "original": "b033c9bd360a3d410d5213c0",
+       "patched": "541f59bf5939c33db5aa3fbf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137737,
+     "source_sha256": "31b77d394da0795b4f949030e8a90f5a4d39c539803cc99b068362d89da62609",
+     "patched_sha256": "2b99e4876a339de443202fbac25a0791a9caebab068bdcaceffb58aecb1fab7f",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "0897463c4c757abfe465cb3e681f873fd055033b4e6ddfbc89d2c83c757dcb3e49617a"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833bed4e0de",
+       "patched": "c0e715c272ea43"
+      },
+      {
+       "offset": 23655,
+       "original": "c714dd",
+       "patched": "d81cde"
+      },
+      {
+       "offset": 23663,
+       "original": "b033c9bd360a5d41cde126",
+       "patched": "541f59bf5939c33db5aa3f"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (UBE tongues)",
+     "out": "meshes/!UBE/SLOVE/tongues",
+     "size": 139914,
+     "source_sha256": "553732023c59a2b57dab7eacab7f8fe69dc0503513e1e73fdd0de164a965dcba",
+     "patched_sha256": "1b7313f92ed61dc78a90578159a0c6b78cb6a835fc83290da41ec80063f7aaa9",
+     "patches": [
+      {
+       "offset": 22341,
+       "original": "bc",
+       "patched": "bd"
+      },
+      {
+       "offset": 39562,
+       "original": "45fc7f3f90b92dbca7b09a3a39be2d3c49fc7f3fb62976ba4f6099ba4f6f793aeeff7f",
+       "patched": "d3e8573c1bfd7abf62bfc83ea1ae863f3f49a9bc0041b2bdd335b53d0295c83e3d057a"
+      },
+      {
+       "offset": 39598,
+       "original": "42fa",
+       "patched": "fc02"
+      },
+      {
+       "offset": 39601,
+       "original": "be8389d43f19aff0",
+       "patched": "c2256d27413b80ec"
+      },
+      {
+       "offset": 39614,
+       "original": "36ea90bd2b9dfd4040953ac0",
+       "patched": "aec8edbed9be043ed76189bf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137737,
+     "source_sha256": "04d788f7d4c7a3f09ab8b187b9663a0da072ef40f58f2cb17e8b9ed1f7bb0b3d",
+     "patched_sha256": "aad277b832ca3450c2047b193faeb4b4717f467a234579122144727ed169454f",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "0897463c4c757abfe465cb3e681f873fd055033b4e6ddfbc89d2c83c757dcb3e49617a"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833be0d2804",
+       "patched": "c0e715c272ea43"
+      },
+      {
+       "offset": 23655,
+       "original": "60aee6",
+       "patched": "d71cde"
+      },
+      {
+       "offset": 23663,
+       "original": "b033c9bdd0a30e41d375aec0",
+       "patched": "541f59bf5939c33db5aa3fbf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137737,
+     "source_sha256": "7ec35e68e41a47713194333d19814eb0e0bd4fb66557f157533cbcb3e3aa3a39",
+     "patched_sha256": "b5a94fdda12dd38492fffd09ff41fe79af56bc62545778323c3ada4719915b5b",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "0897463c4c757abfe465cb3e681f873fd055033b4e6ddfbc89d2c83c757dcb3e49617a"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833be0d2864",
+       "patched": "c0e715c272ea43"
+      },
+      {
+       "offset": 23655,
+       "original": "c794e9",
+       "patched": "d81cde"
+      },
+      {
+       "offset": 23663,
+       "original": "b033c9bdd0a326413adcdcc0",
+       "patched": "541f59bf5939c33db5aa3fbf"
+      }
+     ]
+    }
+   ]
+  },
+  "linga8.nif": {
+   "variants": [
+    {
+     "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "out": "meshes/morten/lingas",
+     "size": 137703,
+     "source_sha256": "1718f5809fc961ee40e4787e73feb1aa2ca5f0835965b479be6bff9a226a4f7f",
+     "patched_sha256": "c5a378a1401fe31635cd6716cdcaef1b296c5b52285ee73f22187f44c1d48917",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6285,
+       "original": "8c8410",
+       "patched": "b5e00a"
+      },
+      {
+       "offset": 6289,
+       "original": "b28d5b",
+       "patched": "0e1d5a"
+      },
+      {
+       "offset": 6293,
+       "original": "1732dd",
+       "patched": "54bcdb"
+      },
+      {
+       "offset": 10975,
+       "original": "dd350d",
+       "patched": "069207"
+      },
+      {
+       "offset": 10979,
+       "original": "6c7c5b",
+       "patched": "c80b5a"
+      },
+      {
+       "offset": 10983,
+       "original": "e1c3dd",
+       "patched": "1e4edc"
+      },
+      {
+       "offset": 15605,
+       "original": "35c309",
+       "patched": "5e1f04"
+      },
+      {
+       "offset": 15609,
+       "original": "12615a",
+       "patched": "6ef058"
+      },
+      {
+       "offset": 15613,
+       "original": "3a1cde",
+       "patched": "77a6dc"
+      },
+      {
+       "offset": 20235,
+       "original": "f39606",
+       "patched": "1cf300"
+      },
+      {
+       "offset": 20239,
+       "original": "4e435a",
+       "patched": "aad258"
+      },
+      {
+       "offset": 20243,
+       "original": "5377dd",
+       "patched": "9001dc"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
        "patched": "8f85883e1d6d72bf4c7cc43ed0b0823f76326d3e0e230dbeb876213dbdcbcf3e855e79"
       },
       {
        "offset": 23647,
        "original": "a9e833be4e83fb3f2d7be1",
-       "patched": "eb6c13c2f8e95b411075dc"
+       "patched": "7a2f0dc2f8e95f4124a3db"
       },
       {
        "offset": 23663,
@@ -670,6 +2520,7 @@
     },
     {
      "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "out": "meshes/morten/lingas",
      "size": 137676,
      "source_sha256": "5b1ffd213ee88c4cbdccd9acc068e3e360863cfee4207c44db9b46a1c0d91d35",
      "patched_sha256": "e4a656086277d4604a9ffc3414c08b5b9a34e690da0d10b664b17860129d24ba",
@@ -698,6 +2549,7 @@
     },
     {
      "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "out": "meshes/morten/lingas",
      "size": 138440,
      "source_sha256": "b2fb9b4e8782fb7d48b1c3bb0b41c3da3d6efdde2a5efe19035decf34877f4a3",
      "patched_sha256": "2ea9e0ab813e8dc1a315767dcb455454bbfe3421096e669710c283781f55dc74",
@@ -723,6 +2575,180 @@
        "patched": "2ff34a40415f3dbf67d18b3f"
       }
      ]
+    },
+    {
+     "label": "SLO VE (human tongues)",
+     "out": "meshes/SLOVE/tongues",
+     "size": 137703,
+     "source_sha256": "9bed4625d68c27432721d0a3895c985cf32883d617559fa13e5db817c6097176",
+     "patched_sha256": "5d6877a5409265d1d860002958a062eb41f0ece4f2e9c670c07cdc24bb0544f1",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "8f85883e1d6d72bf4c7cc43ed0b0823f76326d3e0e230dbeb876213dbdcbcf3e855e79"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "eb6c13c2f8e95b411075dc"
+      },
+      {
+       "offset": 23663,
+       "original": "3a0fcb3d7aa8024100253ac0",
+       "patched": "810456bfe674a83e4ead1abf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137703,
+     "source_sha256": "67174b98a23b31ce0283bc7a96decff9332efc781723aced2f3db5709776348c",
+     "patched_sha256": "f10f604817301cd504af599076a26809bd5cdb2fd2651ff4844915f320fc9160",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "8f85883e1d6d72bf4c7cc43ed0b0823f76326d3e0e230dbeb876213dbdcbcf3e855e79"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833bed4e09e409361e0",
+       "patched": "ea6c13c2f8e95b410f75dc"
+      },
+      {
+       "offset": 23663,
+       "original": "3a0fcb3d7aa83241cdf116c0",
+       "patched": "7a0456bfe274a83e52ad1abf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137703,
+     "source_sha256": "eb092610c8131323108216a3c12fef0b442398d7334cb11985be752dba1624e5",
+     "patched_sha256": "66a421dfdb6f60513c2f03268640598fa481605aa07387e20a83fe9be4e4b268",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "8f85883e1d6d72bf4c7cc43ed0b0823f76326d3e0e230dbeb876213dbdcbcf3e855e79"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833bed4e0de40c714dd",
+       "patched": "eb6c13c2f9e95b411075dc"
+      },
+      {
+       "offset": 23663,
+       "original": "3a0fcb3d7aa85241cd6035",
+       "patched": "7a0456bfe274a83e52ad1a"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (UBE tongues)",
+     "out": "meshes/!UBE/SLOVE/tongues",
+     "size": 133650,
+     "source_sha256": "486ebf73c1a3c87de47916c395c4e784109bda1f3b208f1b3702eeeec9e6b2ca",
+     "patched_sha256": "6728a057a226f50663b369c34fcfd946e954e98f874b7658118d911163b28030",
+     "patches": [
+      {
+       "offset": 20535,
+       "original": "62",
+       "patched": "63"
+      },
+      {
+       "offset": 37958,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 37994,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 38010,
+       "original": "f835c63e3426e74080d5e2bf",
+       "patched": "b5a02e3f0563043f9efa44be"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137703,
+     "source_sha256": "2b0fde1a348b3e57108edf9fb79ad448026518c59c6e4a5355f4d6a89452778d",
+     "patched_sha256": "2602ed6ab0c0dd6ae0d1c5cbf1f5000dabc34d7896758cce7f5cab548653ee00",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "8f85883e1d6d72bf4c7cc43ed0b0823f76326d3e0e230dbeb876213dbdcbcf3e855e79"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833be0d28044060aee6",
+       "patched": "eb6c13c2f8e95b410f75dc"
+      },
+      {
+       "offset": 23663,
+       "original": "3a0fcb3d14420441b345b0c0",
+       "patched": "890456bfea74a83e4bad1abf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137703,
+     "source_sha256": "2a1f952bc0bd2109764b4cd7607b97cbfcf4584302508c956495da179c165ccf",
+     "patched_sha256": "7ae380eb24c48872dcda720c7265db8290436177af0be96ec9856e1a1285f299",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "8f85883e1d6d72bf4c7cc43ed0b0823f76326d3e0e230dbeb876213dbdcbcf3e855e79"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833be0d286440c794e9",
+       "patched": "eb6c13c2f9e95b411075dc"
+      },
+      {
+       "offset": 23663,
+       "original": "3a0fcb3d14421c411aacdec0",
+       "patched": "890456bfea74a83e4bad1abf"
+      }
+     ]
     }
    ]
   },
@@ -730,9 +2756,10 @@
    "variants": [
     {
      "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "out": "meshes/morten/lingas",
      "size": 137737,
      "source_sha256": "ef75757783f55e1e1b6dcd360a0b5234800ce801ab38f73b895025bda7ecc6c5",
-     "patched_sha256": "bf4f8e6a5486a0f1a5b7c950524871cb8aca64613e0aaca1760d122106f38e43",
+     "patched_sha256": "7dd63d09ffb2ea619748a3f4c92f6906136e1e3855c439d5d975fc48dd4660ea",
      "patches": [
       {
        "offset": 6164,
@@ -747,17 +2774,78 @@
       {
        "offset": 6285,
        "original": "a9e833be4e83fb3f2d7be1",
-       "patched": "00fe16c2821ab1407ad1dd"
+       "patched": "85e911c263959d40ad04dc"
       },
       {
        "offset": 6301,
        "original": "6257f7bd94a70741403838c0",
        "patched": "18f450bfce57513bd2a45abf"
+      },
+      {
+       "offset": 9553,
+       "original": "763314",
+       "patched": "43000e"
+      },
+      {
+       "offset": 9557,
+       "original": "cf4cb0",
+       "patched": "69e6b1"
+      },
+      {
+       "offset": 9561,
+       "original": "2842de",
+       "patched": "7a7adc"
+      },
+      {
+       "offset": 14243,
+       "original": "8e830f",
+       "patched": "5b5009"
+      },
+      {
+       "offset": 14247,
+       "original": "7b8baf",
+       "patched": "1525b1"
+      },
+      {
+       "offset": 14251,
+       "original": "5f8ede",
+       "patched": "b1c6dc"
+      },
+      {
+       "offset": 18873,
+       "original": "f5ec11",
+       "patched": "c2b90b"
+      },
+      {
+       "offset": 18877,
+       "original": "6e6db1",
+       "patched": "0807b3"
+      },
+      {
+       "offset": 18881,
+       "original": "1572de",
+       "patched": "67aadc"
+      },
+      {
+       "offset": 23503,
+       "original": "24020e",
+       "patched": "f1ce07"
+      },
+      {
+       "offset": 23507,
+       "original": "855fb1",
+       "patched": "1ff9b2"
+      },
+      {
+       "offset": 23511,
+       "original": "4bc4df",
+       "patched": "9dfcdd"
       }
      ]
     },
     {
      "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "out": "meshes/morten/lingas",
      "size": 137710,
      "source_sha256": "d4bffc1b9088097fc66a45933dc7dccc1aeb448e3b033764aac576477dee8b6a",
      "patched_sha256": "ffa802b66df28b64ee927c2960d49832850436e309950fbb2be3a5dec8a6f00e",
@@ -786,6 +2874,7 @@
     },
     {
      "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "out": "meshes/morten/lingas",
      "size": 137782,
      "source_sha256": "2e03a4442920dd80512654f5e802345b52ff96c96b6c414807ed334cea2fd4e3",
      "patched_sha256": "b6b25141e48313c3ae07c94d09d70bd9ab49ae061bf024c0d2b590de4b92122f",
@@ -811,6 +2900,200 @@
        "patched": "18f450bfce57513bd2a45abf"
       }
      ]
+    },
+    {
+     "label": "SLO VE (human tongues)",
+     "out": "meshes/SLOVE/tongues",
+     "size": 137737,
+     "source_sha256": "6d3171bf1c4ed85cb711422c81d9f81fb6f80f00a3cd29807652f7aa89b70cfb",
+     "patched_sha256": "e91c69e5027863c4a97ab1947671bf18c5fe8f21777275620fdf42b0c85cb398",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "d0bffbbe438659bfb033c73e0f16693fd4de08bf1b208bbc41b4573e73b4a73e0b487b"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "00fe16c2821ab1407ad1dd"
+      },
+      {
+       "offset": 6301,
+       "original": "6257f7bd94a70741403838c0",
+       "patched": "18f450bfce57513bd2a45abf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137737,
+     "source_sha256": "ee601df906c78f33324e045879d6b5ce2c087ebdc1d47029d13e61dd77f0a6fa",
+     "patched_sha256": "3bab3df264c141e08c2bbf7520f07f211136f44fc79eaf67e3e98c612dc35cf0",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "d0bffbbe438659bfb033c73e0f16693fd4de08bf1b208bbc41b4573e73b4a73e0b487b"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833bed4e09e",
+       "patched": "00fe16c2821ab1"
+      },
+      {
+       "offset": 6293,
+       "original": "9361e0",
+       "patched": "7ad1dd"
+      },
+      {
+       "offset": 6301,
+       "original": "6257f7bd94a737410d0515c0",
+       "patched": "18f450bfce57513bd2a45abf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137737,
+     "source_sha256": "1c73e4f6e029266fbdce15b53cf89fac1584e918d96f4472d344815dac68d65c",
+     "patched_sha256": "b397bff13373542d19999fe2664f5eed6186198cb309a693eac7e89658ff9a18",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "d0bffbbe438659bfb033c73e0f16693fd4de08bf1b208bbc41b4573e73b4a73e0b487b"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833bed4e0de",
+       "patched": "01fe16c2821ab1"
+      },
+      {
+       "offset": 6293,
+       "original": "c714",
+       "patched": "7ad1"
+      },
+      {
+       "offset": 6301,
+       "original": "6257f7bd94a75741cdad2d",
+       "patched": "18f450bfce57513bd2a45a"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (UBE tongues)",
+     "out": "meshes/!UBE/SLOVE/tongues",
+     "size": 133684,
+     "source_sha256": "90fdeff0ad95fb5137f621af2002fe67cca8a1977af0b968af926cd58c9a4ce0",
+     "patched_sha256": "cbe737134699503b2bb1741b7be0deb4bb82c7b7b38b83f7cf760540a9566dfb",
+     "patches": [
+      {
+       "offset": 20519,
+       "original": "62",
+       "patched": "63"
+      },
+      {
+       "offset": 20596,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 20632,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 20648,
+       "original": "1d9214bf26a8f04000bfc7bf",
+       "patched": "3c8fe63ea7bb05bf01ec443d"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137737,
+     "source_sha256": "e3af7ef6e6183bb909bf422378aa341006e132b0a3e6fbd227caab710bccf4a2",
+     "patched_sha256": "c7b6a17c3dd94aa0b4720ae99b6361fd0c3aa315a5a1f839eb0d70baa42c6573",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "d0bffbbe438659bfb033c73e0f16693fd4de08bf1b208bbc41b4573e73b4a73e0b487b"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be0d2804",
+       "patched": "00fe16c2821ab1"
+      },
+      {
+       "offset": 6293,
+       "original": "60aee6",
+       "patched": "7ad1dd"
+      },
+      {
+       "offset": 6301,
+       "original": "6257f7bd2e410941534fafc0",
+       "patched": "18f450bfce57513bd2a45abf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137737,
+     "source_sha256": "56a893de1e3083c2a071364173ccc60dc70c345d22c6994f057c1d5736f1dc1b",
+     "patched_sha256": "81635c87cae961a877441c62ab111cc527f8e909f09d17c6d531768c09383600",
+     "patches": [
+      {
+       "offset": 6164,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 6249,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "d0bffbbe438659bfb033c73e0f16693fd4de08bf1b208bbc41b4573e73b4a73e0b487b"
+      },
+      {
+       "offset": 6285,
+       "original": "a9e833be0d2864",
+       "patched": "00fe16c2831ab1"
+      },
+      {
+       "offset": 6293,
+       "original": "c794e9",
+       "patched": "7ad1dd"
+      },
+      {
+       "offset": 6301,
+       "original": "6257f7bd2e412141bab5ddc0",
+       "patched": "18f450bfce57513bd2a45abf"
+      }
+     ]
     }
    ]
   },
@@ -818,14 +3101,75 @@
    "variants": [
     {
      "label": "Halo's HDT Tongues (original, Nexus 57374)",
+     "out": "meshes/morten/lingas",
      "size": 137703,
      "source_sha256": "2c61647a5976ddd8f94ffe0284c5c7b9188f13db2bb011c3d1e038a58b177033",
-     "patched_sha256": "67f4d13c3ad41529bb2ab5f28d6c81f7aeca157ddc1e1e1e1bed1ab08ef4cb43",
+     "patched_sha256": "f54d305ddb9acba9558202a94d34761e073159568d5fcc4b2fe0d8cc758074f6",
      "patches": [
       {
        "offset": 6180,
        "original": "79",
        "patched": "7a"
+      },
+      {
+       "offset": 6285,
+       "original": "88f313",
+       "patched": "c5fd0d"
+      },
+      {
+       "offset": 6289,
+       "original": "a0a71d",
+       "patched": "f25f1c"
+      },
+      {
+       "offset": 6293,
+       "original": "9c48dd",
+       "patched": "7d43db"
+      },
+      {
+       "offset": 10975,
+       "original": "15a911",
+       "patched": "52b30b"
+      },
+      {
+       "offset": 10979,
+       "original": "e66a1e",
+       "patched": "38231d"
+      },
+      {
+       "offset": 10983,
+       "original": "4305de",
+       "patched": "2400dc"
+      },
+      {
+       "offset": 15607,
+       "original": "12",
+       "patched": "0c"
+      },
+      {
+       "offset": 15609,
+       "original": "405f1c",
+       "patched": "92171b"
+      },
+      {
+       "offset": 15615,
+       "original": "de",
+       "patched": "dc"
+      },
+      {
+       "offset": 20237,
+       "original": "11",
+       "patched": "0b"
+      },
+      {
+       "offset": 20239,
+       "original": "b2751d",
+       "patched": "042e1c"
+      },
+      {
+       "offset": 20245,
+       "original": "e0",
+       "patched": "de"
       },
       {
        "offset": 23611,
@@ -835,7 +3179,7 @@
       {
        "offset": 23647,
        "original": "a9e833be4e83fb3f2d7be1",
-       "patched": "1d0117c263fd1d413f9edc"
+       "patched": "132a12c2c9631c41e30edb"
       },
       {
        "offset": 23663,
@@ -846,6 +3190,7 @@
     },
     {
      "label": "Fill Her Up / Fill Her Up Baka Edition",
+     "out": "meshes/morten/lingas",
      "size": 137677,
      "source_sha256": "86549b9d210f2a09d5e55c470d637ce93c6e5d87b9fb4add8f636e3ea5120769",
      "patched_sha256": "09c748134ac988b2d91d66e6a2dea0cbf36d32c312578e24c72ed057d5621a21",
@@ -874,6 +3219,7 @@
     },
     {
      "label": "YgNord HALOS Tongue fix for OAhegao (Nexus 53066)",
+     "out": "meshes/morten/lingas",
      "size": 137749,
      "source_sha256": "168712feff45995b6202634ada88aabd7a6eb654ace18e36127d7918f1c262a8",
      "patched_sha256": "643856406393dae25db1d7d233a9a5b2dff8b5dd7767b884101cb87c62c21849",
@@ -896,6 +3242,180 @@
       {
        "offset": 42109,
        "original": "fcc670bd764f0941c0103fc0",
+       "patched": "dbb05bbffdd10d3e683625bf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (human tongues)",
+     "out": "meshes/SLOVE/tongues",
+     "size": 137703,
+     "source_sha256": "f600c9a307ed5574b6a3c08ee600ba1acad14f83379b0b2029ab5c14a46ea343",
+     "patched_sha256": "549049509244f35e6179f9774abf83d10a9312c7341442ef0d05114442369d5d",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "e23cbfbbef637abf17cecb3ea29b863fc60d2abd0f59b1bd4050c43d26b7ca3e536979"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "1d0117c263fd1d413f9edc"
+      },
+      {
+       "offset": 23663,
+       "original": "fcc670bd764f0941c0103fc0",
+       "patched": "dbb05bbffdd10d3e683625bf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137703,
+     "source_sha256": "b9ab2efdd41ea4e1d79180b78fd59f5e195ac707dfc2dedab1f011a38d7503b5",
+     "patched_sha256": "f7969bb77204e6e82ad1f423bd331b0ccfe4dd4655c8c331efdab6410c412675",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "e23cbfbbef637abf17cecb3ea29b863fc60d2abd0f59b1bd4050c43d26b7ca3e536979"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833bed4e09e409361e0",
+       "patched": "1d0117c262fd1d413f9edc"
+      },
+      {
+       "offset": 23663,
+       "original": "fcc670bd764f39418ddd1bc0",
+       "patched": "dbb05bbffdd10d3e683625bf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137703,
+     "source_sha256": "811f45d792119f6984a43c8348b7309266e36f785d2845332fc30ed2ac28ee24",
+     "patched_sha256": "1908ec599984730d8d4d1a99e9ed7fa8cf87788f6bc3de46cef8c46d5ce572e2",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "e23cbfbbef637abf17cecb3ea29b863fc60d2abd0f59b1bd4050c43d26b7ca3e536979"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833bed4e0de40c714dd",
+       "patched": "1d0117c263fd1d41409edc"
+      },
+      {
+       "offset": 23663,
+       "original": "fcc670bd764f5941cd0f49",
+       "patched": "dbb05bbffdd10d3e683625"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE (UBE tongues)",
+     "out": "meshes/!UBE/SLOVE/tongues",
+     "size": 133651,
+     "source_sha256": "c6acffae49f6bf35c54e28fff68a1cfa435875b700393e8d73b95a5799b6e510",
+     "patched_sha256": "c7d76cf0d369e100976fee9950743d1bee12c9a1eae47ff3175eb2ac5fa0017f",
+     "patches": [
+      {
+       "offset": 20536,
+       "original": "62",
+       "patched": "63"
+      },
+      {
+       "offset": 37959,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "1918393cf0ca7abf3ac1c93ecfad863f65a7babc16cab1bd6559b63d1280c93ea6d279"
+      },
+      {
+       "offset": 37995,
+       "original": "a9e833be4e83fb3f2d7be1",
+       "patched": "a15016c202591c41dd69dd"
+      },
+      {
+       "offset": 38011,
+       "original": "f47f37bdee2ff4404081c8bf",
+       "patched": "9e92b43e1d6e263d126f063e"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Khajiit tongues)",
+     "out": "meshes/SLOVE/tongues/khajiit",
+     "size": 137703,
+     "source_sha256": "b428bf5c36406526c6787a9c518319868ded2f928e8878f4c2d5ddd20914666e",
+     "patched_sha256": "9a1310d529abfe9167b8ebbf85347ae4761ddbc3fce9b23ed361fb383e3ca240",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "e23cbfbbef637abf17cecb3ea29b863fc60d2abd0f59b1bd4050c43d26b7ca3e536979"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833be0d28044060aee6",
+       "patched": "1d0117c262fd1d413f9edc"
+      },
+      {
+       "offset": 23663,
+       "original": "fcc670bd10e90a4193bbb2c0",
+       "patched": "dbb05bbffdd10d3e683625bf"
+      }
+     ]
+    },
+    {
+     "label": "SLO VE 0.7.5+ (Argonian tongues)",
+     "out": "meshes/SLOVE/tongues/argonian",
+     "size": 137703,
+     "source_sha256": "82cabee7289759422f8fe823af21ad50b5a49d3e131bac5803e9867b05220103",
+     "patched_sha256": "748264d575cec731f7bad4b7326ec6279aff384590646a7ed6ba666bdc3c87ac",
+     "patches": [
+      {
+       "offset": 6180,
+       "original": "79",
+       "patched": "7a"
+      },
+      {
+       "offset": 23611,
+       "original": "dcfa7f3fb7fa4bbc3c8bb43a870b4c3ca2fa7f3fd1ce40bb69baafba0eeb413ba7ff7f",
+       "patched": "e23cbfbbef637abf17cecb3ea29b863fc60d2abd0f59b1bd4050c43d26b7ca3e536979"
+      },
+      {
+       "offset": 23647,
+       "original": "a9e833be0d286440c794e9",
+       "patched": "1d0117c263fd1d41409edc"
+      },
+      {
+       "offset": 23663,
+       "original": "fcc670bd10e92241fa21e1c0",
        "patched": "dbb05bbffdd10d3e683625bf"
       }
      ]

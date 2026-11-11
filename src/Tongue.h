@@ -13,6 +13,9 @@ namespace Tongue
 		bool        canSlide{ false };
 		float       slide{ 0.0f };
 		std::uint32_t id{ 0 };
+		float       faceMouth{ -1.0f };    // FaceLab's mouth value for her now (-1 = FaceLab is not drawing a face for her)
+		bool        faceFollowed{ false }; // TongueLab is judging by FaceLab's mouth, not by OStim's
+		bool        asked{ false };        // a FaceLab face asks for the tongue: the mouth does not matter
 		bool        noSlideBone{ false };  // TongueLab looked for the slide bone for a while and there is none (stock mesh, or Halo's without the patch)
 	};
 
@@ -25,6 +28,7 @@ namespace Tongue
 		bool        slides{ true };  // its mesh has the slide bone (Halo's tongues); false = a stock mesh that can only pop in and out
 	};
 	[[nodiscard]] std::vector<TongueChoice> TongueChoiceList();  // the same tongues, each with whether it can slide
+	[[nodiscard]] int WornTongueIndex(std::uint32_t a_actorId);  // index (as in TongueChoice::index) of the tongue this character wears now, -1 = none
 	[[nodiscard]] int PreviewIndex();  // index of the tongue the preview has on now, -1 = none
 	void PreviewTongue(bool a_on, int a_index, std::uint32_t a_actorId = 0x14);  // on the player (0x14) or on another loaded character
 	// which tongue MODEL TongueLab puts on a character itself (no scene, a FaceLab face asked for the tongue): an index into TongueChoices(); -1 = the per-character / global setting.

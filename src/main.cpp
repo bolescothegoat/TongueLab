@@ -1,6 +1,7 @@
 #include "PCH.h"
 
 #include "Config.h"
+#include "Loc.h"
 #include "Npc.h"
 #include "Tongue.h"
 #include "UI.h"
@@ -26,6 +27,8 @@ namespace
 	{
 		if (a_msg->type == SKSE::MessagingInterface::kDataLoaded) {
 			Config::Load();
+			Loc::Init("Data/SKSE/Plugins/TongueLab/Languages", Config::Get().language);
+			Loc::SetLogMissing(Config::Get().debug);
 			Npc::Init();
 			Tongue::Init();
 			UI::Register();
@@ -35,7 +38,7 @@ namespace
 
 extern "C" __declspec(dllexport) constinit SKSE::PluginVersionData SKSEPlugin_Version = []() {
 	SKSE::PluginVersionData v{};
-	v.PluginVersion({ 1, 0, 1, 0 });
+	v.PluginVersion({ 1, 1, 0, 0 });
 	v.PluginName("TongueLab");
 	v.AuthorName("Bolescothegoat");
 	v.UsesAddressLibrary();
@@ -49,7 +52,7 @@ extern "C" __declspec(dllexport) bool SKSEPlugin_Query(const SKSE::QueryInterfac
 {
 	a_info->infoVersion = SKSE::PluginInfo::kVersion;
 	a_info->name = "TongueLab";
-	a_info->version = REL::Version(1, 0, 1, 0).pack();
+	a_info->version = REL::Version(1, 1, 0, 0).pack();
 	return true;
 }
 
@@ -57,7 +60,7 @@ SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
 {
 	InitLogging();
 	SKSE::Init(a_skse);
-	logger::info("TongueLab 1.0.1 loaded (runtime {})", REL::Module::get().version().string());
+	logger::info("TongueLab 1.2.0 loaded (runtime {})", REL::Module::get().version().string());
 	SKSE::GetMessagingInterface()->RegisterListener(OnMessage);
 	return true;
 }
